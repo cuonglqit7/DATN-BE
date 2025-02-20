@@ -6,7 +6,9 @@
     <a href="{{ route('products.index') }}"
         class="px-3 py-2 {{ $active === 'product' ? '' : 'hover:' }}bg-gray-700 rounded text-sm">Sản
         phẩm</a>
-
+    <a href="{{ route('categories.index') }}"
+        class="px-3 py-2 {{ $active === 'category' ? '' : 'hover:' }}bg-gray-700 rounded text-sm">Danh
+        mục</a>
     <a href="{{ route('users.index') }}"
         class="px-3 py-2 {{ $active === 'user' ? '' : 'hover:' }}bg-gray-700 rounded text-sm">Khách
         hàng</a>

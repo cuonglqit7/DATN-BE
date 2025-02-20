@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\UserController;
@@ -13,6 +14,9 @@ Route::middleware('auth')->group(function () {
     Route::resource('users', UserController::class);
     Route::resource('products', ProductController::class);
     Route::resource('roles', RoleController::class);
+    Route::resource('categories', CategoryController::class)->parameters([
+        'categories' => 'category:slug'
+    ]);
 });
 
 

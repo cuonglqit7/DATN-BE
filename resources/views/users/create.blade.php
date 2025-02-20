@@ -35,6 +35,7 @@
             <a href="{{ route('users.index') }}"
                 class="bg-blue-500 text-white px-3 py-2 rounded hover:bg-blue-600 text-xs">Về trước</a>
         </div>
+        <hr class="h-px my-2 bg-gray-200 border-0 dark:bg-gray-700">
         <form class="max-w-md mx-auto" action="{{ route('users.store') }}" method="POST">
             @csrf
             <div class="relative z-0 w-full mb-5 group">
@@ -87,9 +88,7 @@
                 <select multiple id="roles" name="roles[]"
                     class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
                     <option selected>Chọn một roles</option>
-                    @foreach ($roles as $role)
-                        <option value="{{ $role->name }}">{{ $role->name }}</option>
-                    @endforeach
+
                 </select>
             </div>
 

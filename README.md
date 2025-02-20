@@ -100,6 +100,10 @@ php artisan make:model ModelName -m # Tạo Model kèm Migration
 
 Quản lý các quyền của user
 
+## laravel-sluggable
+
+Class Eloquent handler sluggable
+
 ## Đóng góp
 
 Mọi đóng góp đều được hoan nghênh! Vui lòng fork repository và gửi pull request.
