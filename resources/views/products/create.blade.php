@@ -1,16 +1,17 @@
 @extends('layouts.main')
 @section('title', 'Thêm mới')
 @section('checked')
-    <nav class="flex flex-col space-y-2">
+    <x-component-navbar active="product" />
+    {{-- <nav class="flex flex-col space-y-2">
         <a href="{{ route('home') }}" class="px-3 py-2 hover:bg-gray-700 rounded text-sm">Dashboard</a>
-        <a href="{{ route('products.index') }}" class="px-3 py-2 hover:bg-gray-700 rounded text-sm">Sản
+        <a href="{{ route('products.index') }}" class="px-3 py-2 bg-gray-700 rounded text-sm">Sản
             phẩm</a>
 
-        <a href="{{ route('products.index') }}" class="px-3 py-2 bg-gray-700 rounded text-sm">Khách
+        <a href="{{ route('products.index') }}" class="px-3 py-2 hover:bg-gray-700 rounded text-sm">Khách
             hàng</a>
-        <a href="{{ route('roles.index') }}" class="px-3 py-2 bg-gray-700 rounded text-sm">Quyền hạng</a>
+        <a href="{{ route('roles.index') }}" class="px-3 py-2 hover:bg-gray-700 rounded text-sm">Quyền hạng</a>
         <a href="#" class="px-3 py-2 hover:bg-gray-700 rounded text-sm">Cài đặt</a>
-    </nav>
+    </nav> --}}
 @endsection
 @section('content')
     <div class="max-w-7xl mx-auto bg-white p-3 rounded-lg shadow-md text-sm">
@@ -25,7 +26,7 @@
                                 <path
                                     d="m19.707 9.293-2-2-7-7a1 1 0 0 0-1.414 0l-7 7-2 2a1 1 0 0 0 1.414 1.414L2 10.414V18a2 2 0 0 0 2 2h3a1 1 0 0 0 1-1v-4a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v4a1 1 0 0 0 1 1h3a2 2 0 0 0 2-2v-7.586l.293.293a1 1 0 0 0 1.414-1.414Z" />
                             </svg>
-                            Danh sách người dùng
+                            Danh sách sản phẩm
                         </a>
                     </li>
                     <li aria-current="page">
