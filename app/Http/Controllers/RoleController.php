@@ -19,10 +19,16 @@ class RoleController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $roles = Role::all();
-        return view('roles.index', compact('roles'));
+        $numperpage = $request->record_number ?? 10;
+        $roles = Role::query()
+            ->when($request->name, function ($query) use ($request) {
+                $query->where('name', 'like', '%' . $request->name . '%');
+            })
+            ->orderBy('id', 'DESC')
+            ->paginate($numperpage);
+        return view('roles.index', compact('roles', 'numperpage'));
     }
 
     /**
@@ -94,5 +100,13 @@ class RoleController extends Controller
         $role->delete();
 
         return redirect()->route('roles.index')->with('success', 'Đã xóa role thành công!');
+    }
+
+    public function toggleStatus($id)
+    {
+        $role = Role::find($id);
+        $role->status = !$role->status;
+        $role->save();
+        return back()->with('success', 'Trạng thái quyền đã được cập nhật!');
     }
 }

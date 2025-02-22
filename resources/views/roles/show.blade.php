@@ -1,6 +1,6 @@
 @extends('layouts.main')
 @section('title', 'Thêm mới')
-@section('checked')
+@section('navbar')
     <x-component-navbar active="role" />
 @endsection
 @section('content')
@@ -26,7 +26,8 @@
                                 <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                     d="m1 9 4-4-4-4" />
                             </svg>
-                            <span class="ms-1 text-sm font-medium text-gray-500 md:ms-2 dark:text-gray-400">Chỉnh sửa</span>
+                            <span
+                                class="ms-1 text-sm font-medium text-gray-500 md:ms-2 dark:text-gray-400">{{ $role->name }}</span>
                         </div>
                     </li>
                 </ol>

@@ -6,7 +6,7 @@ Dự án này là một ứng dụng web được xây dựng bằng Laravel, m�
 
 ## Yêu cầu hệ thống
 
--   PHP >= 8.1
+-   PHP >= 8.2
 -   Composer
 -   MySQL
 -   Node.js & npm

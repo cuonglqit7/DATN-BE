@@ -12,10 +12,16 @@ class UserController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $users = User::all();
-        return view('users.index', compact('users'));
+        $numperpage = $request->record_number ?? 10;
+        $users = User::query()
+            ->when($request->name, function ($query) use ($request) {
+                $query->where('name', 'like', '%' . $request->name . '%');
+            })
+            ->orderBy('id', 'DESC')
+            ->paginate($numperpage);
+        return view('users.index', compact('users', 'numperpage'));
     }
 
     /**
@@ -32,8 +38,6 @@ class UserController extends Controller
      */
     public function store(Request $request)
     {
-
-
         $request->validate([
             'name' => 'required',
             'email' => 'required|email',
@@ -48,6 +52,7 @@ class UserController extends Controller
         ]);
 
         $user->syncRoles($request->roles);
+
         return redirect()->route('users.index')->with('success', 'Người dùng đã được thêm thành công!');
     }
 
@@ -101,5 +106,13 @@ class UserController extends Controller
         $user->delete();
 
         return redirect()->route('users.index')->with('success', 'Người dùng đã được xóa thành công!');
+    }
+
+    public function toggleStatus($id)
+    {
+        $user = User::find($id);
+        $user->status = !$user->status;
+        $user->save();
+        return back()->with('success', 'Trạng thái người dùng đã được cập nhật!');
     }
 }

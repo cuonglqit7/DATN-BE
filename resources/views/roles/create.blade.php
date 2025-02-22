@@ -1,6 +1,6 @@
 @extends('layouts.main')
 @section('title', 'Thêm mới')
-@section('checked')
+@section('navbar')
     <x-component-navbar active="role" />
 @endsection
 @section('content')

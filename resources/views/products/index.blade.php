@@ -1,6 +1,6 @@
 @extends('layouts.main')
 @section('title', 'Quản lý sản phẩm')
-@section('checked')
+@section('navbar')
     <x-component-navbar active="product" />
 @endsection
 @section('content')

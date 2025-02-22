@@ -1,6 +1,6 @@
 @extends('layouts.main')
 @section('title', 'Thêm mới')
-@section('checked')
+@section('navbar')
     <x-component-navbar active="product" />
     {{-- <nav class="flex flex-col space-y-2">
         <a href="{{ route('home') }}" class="px-3 py-2 hover:bg-gray-700 rounded text-sm">Dashboard</a>
