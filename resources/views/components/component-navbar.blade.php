@@ -43,7 +43,7 @@
         </a>
 
         <!-- Dropdown Content -->
-        <div class="absolute left-0 hidden group-hover:block bg-gray-800 rounded pt-1 p-1 w-full shadow-lg z-10">
+        <div class="absolute left-0 hidden group-hover:block bg-blue-600 rounded pt-1 p-1 w-full shadow-lg z-10">
             <a href="{{ route('categories.index') }}"
                 class="block px-3 py-2 hover:bg-gray-700 rounded text-sm transition-all">Sản phẩm</a>
             <a href="#" class="block px-3 py-2 hover:bg-gray-700 rounded text-sm transition-all">Bài viết</a>
