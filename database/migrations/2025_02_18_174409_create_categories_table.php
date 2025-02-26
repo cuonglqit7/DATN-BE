@@ -18,6 +18,7 @@ return new class extends Migration
             $table->integer('position');
             $table->text('description')->nullable();
             $table->foreignId('parent_id')->nullable()->constrained('categories', 'id')->onUpdate('cascade')->onDelete('cascade');
+            $table->boolean('status')->default(true);
             $table->timestamps();
         });
     }

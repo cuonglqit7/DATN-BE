@@ -17,6 +17,7 @@ return new class extends Migration
             $table->foreignId('user_id')->constrained('users', 'id')->onDelete('cascade');
             $table->integer('rating')->check('rating >= 1 AND rating <= 5');
             $table->text('comment')->nullable();
+            $table->boolean('status')->default(true);
             $table->timestamp('created_at')->useCurrent();
         });
     }

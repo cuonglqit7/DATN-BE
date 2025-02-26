@@ -20,14 +20,13 @@ class CategoryController extends Controller
      */
     public function index(Request $request)
     {
-        // dd($request->all());
-        $categories = Category::withCount('products')->get();
         $numperpage = $request->record_number ?? 10;
         $categories = Category::query()
             ->when($request->category_name, function ($query) use ($request) {
                 $query->where('category_name', 'like', '%' . $request->category_name . '%');
             })
             ->whereNotNull('position')
+            ->withCount('products')
             ->orderBy('position', 'ASC')
             ->paginate($numperpage);
         return view('categories.index', compact('categories', 'numperpage'));

@@ -49,7 +49,7 @@
     </aside>
 
     <!-- Main Content -->
-    <div class="flex-1 ml-64 p-5">
+    <div class="flex-1 ml-64 p-2">
         @yield('content')
     </div>
 

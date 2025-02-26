@@ -17,10 +17,16 @@ class ProductController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $products = Product::all();
-        return view('products.index', compact('products'));
+        $numperpage = $request->record_number ?? 10;
+        $products = Product::query()
+            ->when($request->product_name, function ($query) use ($request) {
+                $query->where('product_name', 'like', '%' . $request->product_name . '%');
+            })
+            ->orderBy('created_at', 'DESC')
+            ->paginate($numperpage);
+        return view('products.index', compact('products', 'numperpage'));
     }
 
     /**
@@ -69,5 +75,13 @@ class ProductController extends Controller
     public function destroy(string $id)
     {
         //
+    }
+
+    public function toggleStatus($id)
+    {
+        $product = Product::find($id);
+        $product->status = !$product->status;
+        $product->save();
+        return back()->with('success', 'Trạng thái sản phẩm đã được cập nhật!');
     }
 }

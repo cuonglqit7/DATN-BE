@@ -28,78 +28,79 @@
 
         </div>
         <hr class="h-px my-2 bg-gray-200 border-0 dark:bg-gray-700">
-        {{-- @session('success')
-            <div class="flex items-center p-4 mb-4 text-sm text-green-800 rounded-lg bg-green-50 dark:bg-gray-800 dark:text-green-400"
-                role="alert">
-                <svg class="shrink-0 inline w-4 h-4 me-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
-                    fill="currentColor" viewBox="0 0 20 20">
-                    <path
-                        d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5ZM9.5 4a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3ZM12 15H8a1 1 0 0 1 0-2h1v-3H8a1 1 0 0 1 0-2h2a1 1 0 0 1 1 1v4h1a1 1 0 0 1 0 2Z" />
-                </svg>
-                <span class="sr-only">Info</span>
-                <div>
-                    {{ $value }}
+        <div class="flex justify-between">
+            <div>
+                <p>Chức năng hàng loạt:</p>
+                <div class="mt-2">
+                    <button class="p-2 bg-red-500 hover:bg-red-600 rounded-full text-white transition-all">
+                        <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24">
+                            <path
+                                d="M8.586 2.586A2 2 0 0 1 10 2h4a2 2 0 0 1 2 2v2h3a1 1 0 1 1 0 2v12a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V8a1 1 0 0 1 0-2h3V4a2 2 0 0 1 .586-1.414ZM10 6h4V4h-4v2Zm1 4a1 1 0 1 0-2 0v8a1 1 0 1 0 2 0v-8Zm4 0a1 1 0 1 0-2 0v8a1 1 0 1 0 2 0v-8Z" />
+                        </svg>
+                    </button>
                 </div>
             </div>
-        @endsession --}}
-        <form action="{{ route('categories.index') }}" method="POST"
-            class="flex flex-wrap justify-end items-center gap-2 my-4">
-            @csrf
-            @method('GET')
-            <div>
-                <select id="record_number" name="record_number"
-                    class="block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
-                    <option value="5" {{ $numperpage == 5 ? 'selected' : '' }}>5</option>
-                    <option value="10" {{ $numperpage == 10 ? 'selected' : '' }}>10</option>
-                    <option value="15" {{ $numperpage == 15 ? 'selected' : '' }}>15</option>
-                    <option value="20" {{ $numperpage == 20 ? 'selected' : '' }}>20</option>
-                </select>
-            </div>
-            <input type="text" name="category_name" placeholder="Tên danh mục" value="{{ request('category_name') }}"
-                class="border rounded p-2 text-sm" />
-            <button type="submit" class="bg-blue-500 text-white px-3 py-2 rounded hover:bg-blue-600 text-xs">Tìm</button>
-            <a href="{{ route('categories.index') }}"
-                class="bg-gray-400 text-white px-3 py-2 rounded hover:bg-gray-500 text-xs">Xóa lọc</a>
-        </form>
+            <form action="{{ route('categories.index') }}" method="POST"
+                class="flex flex-wrap justify-end items-center gap-2 my-4">
+                @csrf
+                @method('GET')
+                <div>
+                    <select id="record_number" name="record_number"
+                        class="block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
+                        <option value="5" {{ $numperpage == 5 ? 'selected' : '' }}>5</option>
+                        <option value="10" {{ $numperpage == 10 ? 'selected' : '' }}>10</option>
+                        <option value="15" {{ $numperpage == 15 ? 'selected' : '' }}>15</option>
+                        <option value="20" {{ $numperpage == 20 ? 'selected' : '' }}>20</option>
+                    </select>
+                </div>
+                <input type="text" name="name" placeholder="Tên quyền" value="{{ request('name') }}"
+                    class="border rounded p-2 text-sm" />
+                <button type="submit"
+                    class="bg-blue-500 text-white px-3 py-2 rounded hover:bg-blue-600 text-xs">Tìm</button>
+                <a href="{{ route('categories.index') }}"
+                    class="bg-gray-400 text-white px-3 py-2 rounded hover:bg-gray-500 text-xs">Xóa lọc</a>
+            </form>
+        </div>
 
         <table class="w-full border-collapse bg-white shadow-lg rounded-lg text-sm">
             <thead>
                 <tr class="bg-gray-100 text-left">
-                    <th class="p-3"><input type="checkbox" id="selectAll" class="accent-blue-500 hover:cursor-pointer">
+                    <th class="p-1"><input type="checkbox" id="selectAll" class="accent-blue-500 hover:cursor-pointer">
                     </th>
-                    <th class="p-3">Tên danh mục</th>
-                    <th class="p-3">Slug</th>
-                    <th class="p-3">SL Sản phẩm</th>
-                    <th class="p-3">Mô tả</th>
-                    <th class="p-3">Vị trí</th>
-                    <th class="p-3">Trạng thái</th>
-                    <th class="p-3">Hành động</th>
+                    <th class="p-2">Tên danh mục</th>
+                    <th class="p-2">Slug</th>
+                    <th class="p-2">SL Sản phẩm</th>
+                    <th class="p-2">Mô tả</th>
+                    <th class="p-2">Vị trí</th>
+                    <th class="p-2">Trạng thái</th>
+                    <th class="p-2">Hành động</th>
                 </tr>
             </thead>
             <tbody>
                 @foreach ($categories as $category)
                     @if ($category->parent_id == null)
                         <tr class="border-t hover:bg-gray-50 transition-all duration-200">
-                            <td class="p-3 text-left">
+                            <td class="p-1 text-left">
                                 <input type="checkbox" name="selected_categories[]" value="{{ $category->id }}"
                                     class="accent-blue-500">
                             </td>
-                            <td class="p-3">
+                            <td class="p-1">
                                 @can('category-list')
                                     <a href="{{ route('categories.show', $category->slug) }}"
+                                        title="{{ $category->category_name }}"
                                         class="font-semibold text-blue-600 hover:underline">{{ $category->category_name }}</a>
                                 @else
                                     {{ $category->category_name }}
                                 @endcan
                             </td>
 
-                            <td class="p-3 text-gray-600">{{ $category->slug }}</td>
-                            <td class="p-3 text-left">{{ $category->products_count ?? 0 }} sản phẩm</td>
-                            <td class="p-3">{{ $category->description }}</td>
-                            <td class="p-3 text-left">{{ $category->position }}</td>
+                            <td class="p-1 text-gray-600">{{ $category->slug }}</td>
+                            <td class="p-1 text-left">{{ $category->products_count ?? 0 }} sản phẩm</td>
+                            <td class="p-1">{{ $category->description }}</td>
+                            <td class="p-1 text-left">{{ $category->position }}</td>
 
                             @can('category-edit')
-                                <td class="p-3 text-left">
+                                <td class="p-1 text-left">
                                     <form action="{{ route('categories.toggleStatus', $category->id) }}" method="POST">
                                         @csrf
                                         @method('PATCH')
@@ -126,7 +127,7 @@
                                 </td>
                             @endcan
 
-                            <td class="p-3 flex gap-2 justify-start">
+                            <td class="p-1 flex gap-2 justify-start">
                                 @can('category-edit')
                                     <a href="{{ route('categories.edit', $category->slug) }}"
                                         class="p-2 bg-yellow-400 hover:bg-yellow-500 rounded-full text-white transition-all">
@@ -158,19 +159,8 @@
                 @endforeach
             </tbody>
         </table>
-        <div class="mt-2">
-            <p>Chức năng hàng loạt:</p>
-            <div class="mt-2">
-                <button class="p-2 bg-red-500 hover:bg-red-600 rounded-full text-white transition-all">
-                    <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24">
-                        <path
-                            d="M8.586 2.586A2 2 0 0 1 10 2h4a2 2 0 0 1 2 2v2h3a1 1 0 1 1 0 2v12a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V8a1 1 0 0 1 0-2h3V4a2 2 0 0 1 .586-1.414ZM10 6h4V4h-4v2Zm1 4a1 1 0 1 0-2 0v8a1 1 0 1 0 2 0v-8Zm4 0a1 1 0 1 0-2 0v8a1 1 0 1 0 2 0v-8Z" />
-                    </svg>
-                </button>
-            </div>
-        </div>
         <!-- Phần phân trang -->
-        <div class="mt-4 flex justify-center">
+        <div class="mt-4">
             {{ $categories->links() }}
         </div>
     </div>

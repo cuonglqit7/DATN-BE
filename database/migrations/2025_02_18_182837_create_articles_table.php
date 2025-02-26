@@ -17,6 +17,7 @@ return new class extends Migration
             $table->string('slug', 100)->unique();
             $table->text('content');
             $table->foreignId('article_category_id')->constrained('article_categories', 'id')->onDelete('cascade');
+            $table->boolean('status')->default(true);
             $table->timestamp('created_at')->useCurrent();
             $table->timestamp('updated_at')->useCurrent()->useCurrentOnUpdate();
         });

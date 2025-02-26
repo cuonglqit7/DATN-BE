@@ -16,6 +16,7 @@ return new class extends Migration
             $table->foreignId('product_id')->constrained('products', 'id')->onDelete('cascade');
             $table->string('attribute_name', 255);
             $table->string('attribute_value', 255);
+            $table->boolean('status')->default(true);
         });
     }
 
