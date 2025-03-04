@@ -18,7 +18,7 @@ return new class extends Migration
             $table->integer('rating')->check('rating >= 1 AND rating <= 5');
             $table->text('comment')->nullable();
             $table->boolean('status')->default(true);
-            $table->timestamp('created_at')->useCurrent();
+            $table->timestamps();
         });
     }
 

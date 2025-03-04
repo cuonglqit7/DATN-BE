@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('order_discounts', function (Blueprint $table) {
             $table->unsignedBigInteger('order_id');
             $table->unsignedBigInteger('discount_id');
+            $table->timestamps();
             $table->primary(['order_id', 'discount_id']);
 
             $table->foreign('order_id')->references('id')->on('orders')->onDelete('cascade');

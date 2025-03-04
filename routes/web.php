@@ -27,10 +27,3 @@ Route::middleware('auth')->group(function () {
     ]);
     Route::patch('/categories/{id}/toggle-status', [CategoryController::class, 'toggleStatus'])->name('categories.toggleStatus');
 });
-
-
-// các route không có sẽ hiện trang 404
-Route::fallback(function () {
-    Log::info("Fallback route hit. Request details:", request()->all());
-    return view('404');
-});

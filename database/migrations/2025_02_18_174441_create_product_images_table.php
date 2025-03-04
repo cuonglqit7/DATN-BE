@@ -17,7 +17,7 @@ return new class extends Migration
             $table->string('image_url', 255);
             $table->string('alt_text', 255)->nullable();
             $table->boolean('status')->default(true);
-            $table->timestamp('created_at')->useCurrent();
+            $table->timestamps();
         });
     }
 

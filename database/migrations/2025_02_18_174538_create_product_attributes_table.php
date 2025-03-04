@@ -17,6 +17,7 @@ return new class extends Migration
             $table->string('attribute_name', 255);
             $table->string('attribute_value', 255);
             $table->boolean('status')->default(true);
+            $table->timestamps();
         });
     }
 

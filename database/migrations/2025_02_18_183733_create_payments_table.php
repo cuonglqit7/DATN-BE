@@ -18,7 +18,7 @@ return new class extends Migration
             $table->string('transaction_id');
             $table->decimal('amount', 10, 2);
             $table->enum('payment_status', ['Pending', 'Completed', 'Failed', 'Refunded'])->default('Pending');
-            $table->timestamp('created_at')->useCurrent();
+            $table->timestamps();
         });
     }
 

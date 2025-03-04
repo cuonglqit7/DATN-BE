@@ -15,11 +15,15 @@ return new class extends Migration
             $table->id();
             $table->string('title', 100);
             $table->string('slug', 100)->unique();
+            $table->string('thumbnail_url', 255);
+            $table->text('short_desciption');
             $table->text('content');
-            $table->foreignId('article_category_id')->constrained('article_categories', 'id')->onDelete('cascade');
+            $table->foreignId('product_id')->nullable()->constrained('products', 'id')->onDelete('cascade');
+            $table->foreignId('user_id')->constrained('users', 'id')->onDelete('cascade');
             $table->boolean('status')->default(true);
-            $table->timestamp('created_at')->useCurrent();
-            $table->timestamp('updated_at')->useCurrent()->useCurrentOnUpdate();
+            $table->timestamps();
+
+            $table->foreignId('article_category_id')->constrained('article_categories', 'id')->onDelete('cascade');
         });
     }
 

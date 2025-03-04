@@ -33,15 +33,16 @@
                 class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 text-xs">Về trước</a>
         </div>
         <hr class="h-px my-2 bg-gray-200 border-0 dark:bg-gray-700">
-        <form class="max-w-4xl mx-auto grid grid-cols-2 gap-5" action="{{ route('products.store') }}" method="POST"
-            enctype="multipart/form-data">
+        <form class="max-w-4xl mx-auto grid grid-cols-2 gap-5" action="{{ route('products.update', $product->id) }}"
+            method="POST" enctype="multipart/form-data">
             @csrf
-
+            @method('PATCH')
             <div class="col-span-2 mt-2">
                 <label for="product_name" class="block text-sm font-medium text-gray-700">
                     Tên sản phẩm (tối đa 100 ký tự)
                 </label>
                 <input type="text" name="product_name" id="product_name" maxlength="100"
+                    value="{{ $product->product_name }}"
                     class="mt-1 block w-full bg-gray-100 rounded-md border-gray-400 p-2 shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
                     placeholder="Nhập tên sản phẩm..." required oninput="updateCharCount()">
                 <p id="char-count" class="text-xs text-gray-500 mt-1">0/100 ký tự</p>
@@ -52,7 +53,7 @@
 
             <div>
                 <label for="price" class="block text-sm font-medium text-gray-700">Giá</label>
-                <input type="number" name="price" id="price" min="1"
+                <input type="number" name="price" id="price" min="1" value="{{ $product->price }}"
                     class="mt-1 block w-full bg-gray-100 rounded-md border-gray-400 p-2 shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
                     placeholder="Nhập giá sản phẩm..." required oninput="formatPrice(this)">
                 <p id="formatted-price" class="text-xs text-gray-500 mt-1"></p>
@@ -65,77 +66,15 @@
                 <label for="category" class="block text-sm font-medium text-gray-700">Danh mục</label>
                 <select name="category" id="category"
                     class="mt-1 block w-full bg-gray-100 rounded-md border-2 border-gray-400 p-2 shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
-                    <option value="" disabled selected>Chọn danh mục</option>
+                    <option value="" disabled>Chọn danh mục</option>
                     @foreach ($categories as $category)
-                        <option value="{{ $category->id }}">{{ $category->category_name }}</option>
+                        <option value="{{ $category->id }}"
+                            {{ $product->category->category_name === $category->category_name ? 'selected' : '' }}>
+                            {{ $category->category_name }}</option>
                     @endforeach
                 </select>
             </div>
             @error('category')
-                <p class="text-red-500 text-sm">{{ $message }}</p>
-            @enderror
-
-            <div>
-                <label class="block text-sm font-medium text-gray-700">Chọn giảm giá</label>
-                <select id="discountSelect" class="mt-2 w-full p-2 border rounded">
-                    <option value="">Chọn giảm giá</option>
-                    @foreach ($discounts as $discount)
-                        <option value="{{ $discount->id }}" data-type="{{ $discount->discount_type }}"
-                            data-value="{{ $discount->discount_value }}">
-                            {{ $discount->discount_type }} - {{ $discount->discount_value }}
-                        </option>
-                    @endforeach
-                </select>
-
-                <ul id="selectedDiscountsList" class="mt-4">
-                    @if (isset($product))
-                        @foreach ($product->discounts as $discount)
-                            <li data-id="{{ $discount->id }}"
-                                class="selected-discount flex justify-between bg-gray-200 p-2 rounded mt-2">
-                                {{ $discount->discount_type }} - {{ $discount->discount_value }}
-                                <button class="text-red-500 remove-discount">X</button>
-                            </li>
-                        @endforeach
-                    @endif
-                </ul>
-
-                <input type="hidden" name="discounts" id="discountsInput"
-                    value="{{ isset($product) ? implode(',', $product->discounts->pluck('id')->toArray()) : '' }}">
-            </div>
-
-
-            <div class="">
-                <label for="attribute_name" class="block text-sm font-medium text-gray-700">Thuộc tính sản phẩm</label>
-                <div class="grid grid-cols-2 gap-3">
-                    <input type="text" name="attribute_name[]" id="attribute_name"
-                        class="mt-1 block w-full bg-gray-100 rounded-md border-gray-400 p-2 shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-                        placeholder="Nhập tên thuộc tính (VD: Màu sắc, Kích thước)" required>
-                    <input type="text" name="attribute_value[]" id="attribute_value"
-                        class="mt-1 block w-full bg-gray-100 rounded-md border-gray-400 p-2 shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-                        placeholder="Nhập giá trị (VD: Đỏ, XL, Cotton)" required>
-                </div>
-                <!-- Hiển thị danh sách thuộc tính đã thêm -->
-                <div id="attribute-list" class="mt-3 space-y-2"></div>
-
-                <!-- Nút thêm thuộc tính -->
-                <button type="button" onclick="addAttribute()"
-                    class="mt-2 bg-green-600 text-white px-3 py-2 rounded-md text-sm hover:bg-green-700 transition">
-                    + Thêm thuộc tính
-                </button>
-            </div>
-            @error('attribute_name')
-                <p class="text-red-500 text-sm">{{ $message }}</p>
-            @enderror
-
-            <div class="col-span-2">
-                <label for="images" class="block text-sm font-medium text-gray-700">Ảnh sản phẩm</label>
-                <input type="file" id="images" name="images[]" multiple
-                    class="mt-1 block w-full p-1 text-sm border border-gray-300 cursor-pointer rounded-lg bg-gray-50 focus:outline-none"
-                    onchange="handleFiles(event)">
-                <div id="file-list" class="mt-2 text-sm text-gray-700"></div>
-                <p id="file-warning" class="text-red-500 text-sm mt-2 hidden">Bạn chỉ được chọn tối đa 5 hình!</p>
-            </div>
-            @error('images')
                 <p class="text-red-500 text-sm">{{ $message }}</p>
             @enderror
 
@@ -144,7 +83,7 @@
                 <label for="description" class="block text-sm font-medium text-gray-700">Mô tả</label>
                 <textarea name="description" id="description" rows="4"
                     class="mt-1 p-3 block w-full bg-gray-100 rounded-lg border-2 border-gray-300 bg-blue-20 focus:ring-blue-600 focus:border-blue-300 sm:text-sm"
-                    required></textarea>
+                    required>{{ $product->description }}</textarea>
             </div>
             @error('desciption')
                 <p class="text-red-500 text-sm">{{ $message }}</p>
@@ -154,14 +93,16 @@
                 <label class="block text-sm font-medium text-gray-700">Trạng thái</label>
                 <div class="flex gap-4 mt-2">
                     <label class="flex items-center">
-                        <input type="radio" name="status" value="1" checked class="hidden peer">
+                        <input type="radio" name="status" value="1" {{ $product->status === 1 ? 'checked' : '' }}
+                            class="hidden peer">
                         <span
                             class="peer-checked:bg-blue-600 peer-checked:text-white px-4 py-2 rounded-md border border-gray-400 cursor-pointer">
                             ✅ Hiển thị
                         </span>
                     </label>
                     <label class="flex items-center">
-                        <input type="radio" name="status" value="0" class="hidden peer">
+                        <input type="radio" name="status" value="0" {{ $product->status === 0 ? 'checked' : '' }}
+                            class="hidden peer">
                         <span
                             class="peer-checked:bg-red-600 peer-checked:text-white px-4 py-2 rounded-md border border-gray-400 cursor-pointer">
                             🚫 Ẩn
@@ -176,78 +117,13 @@
             <!-- Nút xác nhận -->
             <div class="col-span-2 flex justify-start">
                 <button type="submit"
-                    class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg px-5 py-2.5 text-center">Thêm
-                    sản phẩm</button>
+                    class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg px-5 py-2.5 text-center">Cập
+                    nhật sản phẩm</button>
             </div>
         </form>
     </div>
 @endsection
 @push('scripts')
-    <script>
-        let selectedFiles = [];
-        const maxFiles = 5;
-
-        function handleFiles(event) {
-            const input = event.target;
-            const newFiles = Array.from(input.files);
-
-            if (selectedFiles.length + newFiles.length > maxFiles) {
-                document.getElementById('file-warning').classList.remove('hidden');
-                return;
-            } else {
-                document.getElementById('file-warning').classList.add('hidden');
-            }
-
-            // Thêm file mới vào danh sách
-            selectedFiles = selectedFiles.concat(newFiles);
-
-            // Tạo DataTransfer để cập nhật input.files
-            const dataTransfer = new DataTransfer();
-            selectedFiles.forEach(file => dataTransfer.items.add(file));
-            input.files = dataTransfer.files; // Cập nhật input.files để gửi tất cả file
-
-            updateFileList();
-        }
-
-        function updateFileList() {
-            const fileList = document.getElementById('file-list');
-            fileList.innerHTML = '';
-
-            if (selectedFiles.length > 0) {
-                const ul = document.createElement('ul');
-                ul.classList.add('list-disc', 'pl-5');
-
-                selectedFiles.forEach((file, index) => {
-                    const li = document.createElement('li');
-                    li.classList.add('flex', 'justify-between', 'items-center', 'mb-1');
-
-                    li.innerHTML = `
-                    <span>${file.name}</span>
-                    <button onclick="removeFile(${index})" class="ml-3 text-red-500 text-xs hover:underline">
-                        Xóa
-                    </button>
-                `;
-
-                    ul.appendChild(li);
-                });
-
-                fileList.appendChild(ul);
-            }
-        }
-
-        function removeFile(index) {
-            selectedFiles.splice(index, 1);
-
-            // Tạo lại DataTransfer để cập nhật input.files
-            const dataTransfer = new DataTransfer();
-            selectedFiles.forEach(file => dataTransfer.items.add(file));
-            document.getElementById("images").files = dataTransfer.files;
-
-            updateFileList();
-        }
-    </script>
-
-
     <script>
         function updateCharCount() {
             let input = document.getElementById('product_name');
@@ -263,6 +139,7 @@
                 value ? `Giá: ${parseInt(value).toLocaleString('vi-VN')} VND` : '';
         }
     </script>
+
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const select = document.getElementById('discountSelect');
@@ -304,27 +181,51 @@
     </script>
 
     <script>
+        let removedAttributes = [];
+        let newAttributes = [];
+
         function addAttribute() {
+            let nameInput = document.getElementById("attribute_name");
+            let valueInput = document.getElementById("attribute_value");
+
+            let name = nameInput.value.trim();
+            let value = valueInput.value.trim();
+
+            if (name === "" || value === "") {
+                alert("Vui lòng nhập đầy đủ thuộc tính và giá trị!");
+                return;
+            }
+
             let container = document.getElementById("attribute-list");
 
             let div = document.createElement("div");
-            div.classList.add("flex", "gap-3", "items-center");
+            div.classList.add("flex", "gap-3", "items-center", "attribute-item");
+
+
+            let inputId = document.createElement("input");
+            inputId.type = "hidden";
+            inputId.name = "attribute_id[]";
+            inputId.value = "new"; // Đánh dấu là thuộc tính mới
 
             let inputName = document.createElement("input");
             inputName.type = "text";
             inputName.name = "attribute_name[]";
-            inputName.placeholder = "Tên thuộc tính";
-            inputName.required = true;
-            inputName.classList.add("block", "w-full", "rounded-md", "border-gray-400", "p-2", "shadow-sm",
-                "focus:ring-blue-500", "focus:border-blue-500", "sm:text-sm", "bg-gray-100");
+            inputName.value = name;
+            inputName.classList.add("mt-1", "block", "w-full", "bg-gray-100", "rounded-md", "border-gray-400", "p-2",
+                "shadow-sm", "focus:ring-blue-500", "focus:border-blue-500", "sm:text-sm");
+            inputName.oninput = function() {
+                markAsUpdated(inputId);
+            };
 
             let inputValue = document.createElement("input");
             inputValue.type = "text";
             inputValue.name = "attribute_value[]";
-            inputValue.placeholder = "Giá trị";
-            inputValue.required = true;
-            inputValue.classList.add("block", "w-full", "rounded-md", "border-gray-400", "p-2", "shadow-sm",
-                "focus:ring-blue-500", "focus:border-blue-500", "sm:text-sm", "bg-gray-100");
+            inputValue.value = value;
+            inputValue.classList.add("mt-1", "block", "w-full", "bg-gray-100", "rounded-md", "border-gray-400", "p-2",
+                "shadow-sm", "focus:ring-blue-500", "focus:border-blue-500", "sm:text-sm");
+            inputValue.oninput = function() {
+                markAsUpdated(inputId);
+            };
 
             let removeBtn = document.createElement("button");
             removeBtn.innerHTML = "Xóa";
@@ -334,11 +235,41 @@
                 container.removeChild(div);
             };
 
+            div.appendChild(inputId);
             div.appendChild(inputName);
             div.appendChild(inputValue);
             div.appendChild(removeBtn);
-
             container.appendChild(div);
+
+            // Đánh dấu là thuộc tính mới
+            newAttributes.push({
+                name,
+                value
+            });
+
+            // Reset input fields
+            nameInput.value = "";
+            valueInput.value = "";
+        }
+
+        function markAsUpdated(inputId) {
+            if (inputId.value !== "new" && !newAttributes.includes(inputId.value)) {
+                inputId.value = "updated";
+            }
+        }
+
+        function removeAttribute(button, attributeId = null) {
+            let container = document.getElementById("attribute-list");
+            let attributeDiv = button.parentElement;
+
+            // Nếu thuộc tính có ID từ CSDL, ta lưu ID vào danh sách xóa
+            if (attributeId !== null) {
+                removedAttributes.push(attributeId);
+                document.getElementById("removed_attributes").value = JSON.stringify(removedAttributes);
+            }
+
+            // Xóa khỏi giao diện
+            container.removeChild(attributeDiv);
         }
     </script>
 @endpush

@@ -5,7 +5,8 @@ namespace Database\Seeders;
 use App\Models\User;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
-use Spatie\Permission\Models\Role;
+
+use function Pest\Laravel\call;
 
 class DatabaseSeeder extends Seeder
 {
@@ -21,5 +22,15 @@ class DatabaseSeeder extends Seeder
             'email' => 'admin@gmail.com',
             'password' => 'admin@gmail.com'
         ]);
+
+        $this->call(PermissionSeeder::class);
+        $this->call(CategorySeeder::class);
+        $this->call(ProductSeeder::class);
+        $this->call(ProductImageSeeder::class);
+        $this->call(ProductReviewsSeeder::class);
+        $this->call(DiscountsSeeder::class);
+        $this->call(ArticleCategoriesSeeder::class);
+        $this->call(ArticlesSeeder::class);
+        $this->call(ProductAttributesSeeder::class);
     }
 }

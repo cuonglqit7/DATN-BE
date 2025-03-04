@@ -17,7 +17,9 @@ return new class extends Migration
             $table->string('slug', 255)->unique();
             $table->text('description')->nullable();
             $table->decimal('price', 10, 2);
-            $table->enum('status', ['Active', 'Inactive'])->default('Active');
+            $table->integer('quantity_in_stock')->notNull();
+            $table->integer('quantity_sold')->default(0);
+            $table->boolean('status')->default(true);
             $table->timestamps();
 
             $table->foreignId('category_id')->nullable()->constrained('categories', 'id')->onDelete('set null'); // Khi danh mục bị xóa sẽ set là null

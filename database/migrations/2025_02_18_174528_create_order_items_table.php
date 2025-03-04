@@ -18,6 +18,7 @@ return new class extends Migration
             $table->integer('quantity')->notNull();
             $table->decimal('unit_price', 10, 2)->notNull();
             $table->decimal('total_price', 10, 2)->notNull();
+            $table->timestamps();
         });
     }
 

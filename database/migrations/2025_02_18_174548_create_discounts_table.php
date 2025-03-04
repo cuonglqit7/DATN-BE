@@ -9,15 +9,16 @@ return new class extends Migration
     /**
      * Run the migrations.
      */
-    public function up(): void
+    public function up()
     {
         Schema::create('discounts', function (Blueprint $table) {
             $table->id();
-            $table->enum('discount_type', ['Percentage', 'Fixed Amount', 'Order Value Based']);
+            $table->string('code', 50)->unique();
+            $table->enum('discount_type', ['Percentage', 'Fixed Amount']);
             $table->decimal('discount_value', 10, 2);
             $table->date('start_date');
             $table->date('end_date');
-            $table->timestamp('created_at')->useCurrent();
+            $table->timestamps();
         });
     }
 

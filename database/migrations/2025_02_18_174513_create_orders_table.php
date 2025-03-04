@@ -14,12 +14,17 @@ return new class extends Migration
         Schema::create('orders', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->constrained('users', 'id')->onDelete('cascade');
+            $table->string('recipient_name', 50);
+            $table->string('recipient_phone', 10);
+            $table->string('shipping_address', 500);
             $table->timestamp('order_date')->useCurrent();
             $table->decimal('total_price', 10, 2)->notNull();
             $table->enum('payment_method', ['Bank_transfer', 'Momo', 'cod'])->default('COD');
             $table->enum('payment_status', ['Pending', 'Completed', 'Failed', 'Refunded'])->default('Pending');
             $table->enum('status', ['Pending', 'Completed', 'Cancelled'])->default('Pending');
-            $table->timestamp('created_at')->useCurrent();
+            $table->string('user_note', 200)->nullable();
+            $table->string('admin_note', 200)->nullable();
+            $table->timestamps();
         });
     }
 
