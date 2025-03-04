@@ -43,23 +43,47 @@
                 </label>
                 <input type="text" name="product_name" id="product_name" maxlength="100"
                     class="mt-1 block w-full bg-gray-100 rounded-md border-gray-400 p-2 shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-                    placeholder="Nhập tên sản phẩm..." required oninput="updateCharCount()">
+                    placeholder="Nhập tên sản phẩm..." oninput="updateCharCount()">
                 <p id="char-count" class="text-xs text-gray-500 mt-1">0/100 ký tự</p>
+                @error('product_name')
+                    <p class="text-red-500 text-sm">{{ $message }}</p>
+                @enderror
             </div>
-            @error('product_name')
-                <p class="text-red-500 text-sm">{{ $message }}</p>
-            @enderror
+
 
             <div>
-                <label for="price" class="block text-sm font-medium text-gray-700">Giá</label>
+                <label for="price" class="block text-sm font-medium text-gray-700">Giá gốc</label>
                 <input type="number" name="price" id="price" min="1"
                     class="mt-1 block w-full bg-gray-100 rounded-md border-gray-400 p-2 shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-                    placeholder="Nhập giá sản phẩm..." required oninput="formatPrice(this)">
+                    placeholder="Nhập giá gốc sản phẩm..." oninput="formatPrice(this)">
                 <p id="formatted-price" class="text-xs text-gray-500 mt-1"></p>
+                @error('price')
+                    <p class="text-red-500 text-sm">{{ $message }}</p>
+                @enderror
             </div>
-            @error('price')
-                <p class="text-red-500 text-sm">{{ $message }}</p>
-            @enderror
+
+            <div>
+                <label for="promotion_price" class="block text-sm font-medium text-gray-700">Giá đã giảm</label>
+                <input type="number" name="promotion_price" id="promotion_price" min="1"
+                    class="mt-1 block w-full bg-gray-100 rounded-md border-gray-400 p-2 shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                    placeholder="Nhập giá giảm sản phẩm..." oninput="formatPromotionPrice(this)">
+                <p id="formatted-promotion_price" class="text-xs text-gray-500 mt-1"></p>
+                @error('promotion_price')
+                    <p class="text-red-500 text-sm">{{ $message }}</p>
+                @enderror
+            </div>
+
+
+            <div>
+                <label for="quantity_in_stock" class="block text-sm font-medium text-gray-700">Số lượng nhập vào</label>
+                <input type="number" name="quantity_in_stock" id="quantity_in_stock" min="1"
+                    class="mt-1 block w-full bg-gray-100 rounded-md border-gray-400 p-2 shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                    placeholder="Nhập số sản phẩm nhập vào...">
+                @error('quantity_in_stock')
+                    <p class="text-red-500 text-sm">{{ $message }}</p>
+                @enderror
+            </div>
+
 
             <div>
                 <label for="category" class="block text-sm font-medium text-gray-700">Danh mục</label>
@@ -70,50 +94,27 @@
                         <option value="{{ $category->id }}">{{ $category->category_name }}</option>
                     @endforeach
                 </select>
+                @error('category')
+                    <p class="text-red-500 text-sm">{{ $message }}</p>
+                @enderror
             </div>
-            @error('category')
-                <p class="text-red-500 text-sm">{{ $message }}</p>
-            @enderror
+
 
             <div>
-                <label class="block text-sm font-medium text-gray-700">Chọn giảm giá</label>
-                <select id="discountSelect" class="mt-2 w-full p-2 border rounded">
-                    <option value="">Chọn giảm giá</option>
-                    @foreach ($discounts as $discount)
-                        <option value="{{ $discount->id }}" data-type="{{ $discount->discount_type }}"
-                            data-value="{{ $discount->discount_value }}">
-                            {{ $discount->discount_type }} - {{ $discount->discount_value }}
-                        </option>
-                    @endforeach
-                </select>
-
-                <ul id="selectedDiscountsList" class="mt-4">
-                    @if (isset($product))
-                        @foreach ($product->discounts as $discount)
-                            <li data-id="{{ $discount->id }}"
-                                class="selected-discount flex justify-between bg-gray-200 p-2 rounded mt-2">
-                                {{ $discount->discount_type }} - {{ $discount->discount_value }}
-                                <button class="text-red-500 remove-discount">X</button>
-                            </li>
-                        @endforeach
-                    @endif
-                </ul>
-
-                <input type="hidden" name="discounts" id="discountsInput"
-                    value="{{ isset($product) ? implode(',', $product->discounts->pluck('id')->toArray()) : '' }}">
-            </div>
-
-
-            <div class="">
                 <label for="attribute_name" class="block text-sm font-medium text-gray-700">Thuộc tính sản phẩm</label>
-                <div class="grid grid-cols-2 gap-3">
-                    <input type="text" name="attribute_name[]" id="attribute_name"
-                        class="mt-1 block w-full bg-gray-100 rounded-md border-gray-400 p-2 shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-                        placeholder="Nhập tên thuộc tính (VD: Màu sắc, Kích thước)" required>
-                    <input type="text" name="attribute_value[]" id="attribute_value"
-                        class="mt-1 block w-full bg-gray-100 rounded-md border-gray-400 p-2 shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-                        placeholder="Nhập giá trị (VD: Đỏ, XL, Cotton)" required>
+
+                <!-- Dòng đầu tiên có sẵn -->
+                <div class="flex gap-3 items-center mt-2">
+                    <input type="text" name="attribute_name[]"
+                        class="block w-full bg-gray-100 rounded-md border-gray-400 p-2 shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                        placeholder="Nhập tên thuộc tính">
+                    <input type="text" name="attribute_value[]"
+                        class="block w-full bg-gray-100 rounded-md border-gray-400 p-2 shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                        placeholder="Nhập giá trị">
+                    <button type="button" class="text-red-500 hover:text-red-700 text-sm font-semibold"
+                        onclick="this.parentElement.remove()">Xóa</button>
                 </div>
+
                 <!-- Hiển thị danh sách thuộc tính đã thêm -->
                 <div id="attribute-list" class="mt-3 space-y-2"></div>
 
@@ -122,10 +123,11 @@
                     class="mt-2 bg-green-600 text-white px-3 py-2 rounded-md text-sm hover:bg-green-700 transition">
                     + Thêm thuộc tính
                 </button>
+                @error('attribute_name')
+                    <p class="text-red-500 text-sm">{{ $message }}</p>
+                @enderror
             </div>
-            @error('attribute_name')
-                <p class="text-red-500 text-sm">{{ $message }}</p>
-            @enderror
+
 
             <div class="col-span-2">
                 <label for="images" class="block text-sm font-medium text-gray-700">Ảnh sản phẩm</label>
@@ -134,21 +136,22 @@
                     onchange="handleFiles(event)">
                 <div id="file-list" class="mt-2 text-sm text-gray-700"></div>
                 <p id="file-warning" class="text-red-500 text-sm mt-2 hidden">Bạn chỉ được chọn tối đa 5 hình!</p>
+                @error('images')
+                    <p class="text-red-500 text-sm">{{ $message }}</p>
+                @enderror
             </div>
-            @error('images')
-                <p class="text-red-500 text-sm">{{ $message }}</p>
-            @enderror
+
 
             <!-- Mô tả -->
             <div class="col-span-2">
                 <label for="description" class="block text-sm font-medium text-gray-700">Mô tả</label>
                 <textarea name="description" id="description" rows="4"
-                    class="mt-1 p-3 block w-full bg-gray-100 rounded-lg border-2 border-gray-300 bg-blue-20 focus:ring-blue-600 focus:border-blue-300 sm:text-sm"
-                    required></textarea>
+                    class="mt-1 p-3 block w-full bg-gray-100 rounded-lg border-2 border-gray-300 bg-blue-20 focus:ring-blue-600 focus:border-blue-300 sm:text-sm"></textarea>
+                @error('desciption')
+                    <p class="text-red-500 text-sm">{{ $message }}</p>
+                @enderror
             </div>
-            @error('desciption')
-                <p class="text-red-500 text-sm">{{ $message }}</p>
-            @enderror
+
 
             <div>
                 <label class="block text-sm font-medium text-gray-700">Trạng thái</label>
@@ -168,10 +171,11 @@
                         </span>
                     </label>
                 </div>
+                @error('status')
+                    <p class="text-red-500 text-sm">{{ $message }}</p>
+                @enderror
             </div>
-            @error('status')
-                <p class="text-red-500 text-sm">{{ $message }}</p>
-            @enderror
+
 
             <!-- Nút xác nhận -->
             <div class="col-span-2 flex justify-start">
@@ -262,45 +266,13 @@
             document.getElementById('formatted-price').textContent =
                 value ? `Giá: ${parseInt(value).toLocaleString('vi-VN')} VND` : '';
         }
-    </script>
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const select = document.getElementById('discountSelect');
-            const list = document.getElementById('selectedDiscountsList');
-            const input = document.getElementById('discountsInput');
 
-            select.addEventListener('change', function() {
-                const selectedOption = select.options[select.selectedIndex];
-                const discountId = selectedOption.value;
-                const discountType = selectedOption.getAttribute('data-type');
-                const discountValue = selectedOption.getAttribute('data-value');
-
-                if (discountId && !document.querySelector(`li[data-id="${discountId}"]`)) {
-                    const listItem = document.createElement('li');
-                    listItem.setAttribute('data-id', discountId);
-                    listItem.classList.add('selected-discount', 'flex', 'justify-between', 'bg-gray-200',
-                        'p-2', 'rounded', 'mt-2');
-                    listItem.innerHTML =
-                        `${discountType} - ${discountValue} <button class="text-red-500 remove-discount">Xóa</button>`;
-
-                    list.appendChild(listItem);
-                    updateHiddenInput();
-                }
-            });
-
-            list.addEventListener('click', function(event) {
-                if (event.target.classList.contains('remove-discount')) {
-                    event.target.parentElement.remove();
-                    updateHiddenInput();
-                }
-            });
-
-            function updateHiddenInput() {
-                const selectedIds = Array.from(document.querySelectorAll('.selected-discount')).map(item => item
-                    .getAttribute('data-id'));
-                input.value = selectedIds.join(',');
-            }
-        });
+        function formatPromotionPrice(input) {
+            let value = input.value.replace(/\D/g, '');
+            input.value = value;
+            document.getElementById('formatted-promotion_price').textContent =
+                value ? `Giá: ${parseInt(value).toLocaleString('vi-VN')} VND` : '';
+        }
     </script>
 
     <script>

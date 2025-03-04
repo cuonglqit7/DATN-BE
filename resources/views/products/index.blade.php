@@ -57,8 +57,11 @@
                     <th class="p-1"><input type="checkbox" id="selectAll" class="accent-blue-500 hover:cursor-pointer">
                     </th>
                     <th class="p-2 max-w-24">Tên sản phẩm</th>
-                    <th class="p-2 ps-3">Giá</th>
+                    <th class="p-2 ps-3">Giá gốc</th>
+                    <th class="p-2 ps-3">Giá giảm</th>
                     <th class="p-2">Danh mục</th>
+                    <th class="p-2">Tồn kho</th>
+                    <th class="p-2">Đã bán được</th>
                     <th class="p-2">Trạng thái</th>
                     <th class="p-2">Hành động</th>
                 </tr>
@@ -71,14 +74,17 @@
                                 class="accent-blue-500">
                         </td>
                         <td class="p-1 max-w-24 overflow-hidden text-ellipsis whitespace-nowrap">
-                            <a href="{{ route('products.show', $product->id) }}" title="{{ $product->product_name }}"
+                            <a href="{{ route('products.show', $product->slug) }}" title="{{ $product->product_name }}"
                                 class="font-semibold text-blue-600 hover:underline">{{ $product->product_name }}</a>
                         </td>
                         <td class="p-1 ps-3">
                             {{ number_format($product->price, 0, ',', '.') }} VNĐ
                         </td>
-                        <td class="p-1">{{ $product->category->category_name }}</td>
-                        <td class="p-1">
+                        <td class="p-1 ps-3">{{ number_format($product->promotion_price, 0, ',', '.') }} VNĐ</td>
+                        <td class="p-1 ps-3">{{ $product->category->category_name }}</td>
+                        <td class="p-1 ps-3">{{ $product->quantity_in_stock }}</td>
+                        <td class="p-1 ps-3">{{ $product->quantity_sold }}</td>
+                        <td class="p-1 ps-3">
                             @can('product-edit')
                                 <form action="{{ route('products.toggleStatus', $product->id) }}" method="POST">
                                     @csrf

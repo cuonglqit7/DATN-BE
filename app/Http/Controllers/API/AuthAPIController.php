@@ -20,7 +20,7 @@ class AuthAPIController extends Controller
             ]);
             $user = User::where('email', request('email'))->first();
 
-            if (!$user || !Hash::check(request('password'), $user->password) || $user->hasRole(['admin', 'manager'])) {
+            if (!$user || !Hash::check(request('password'), $user->password) || !$user->hasRole(['user'])) {
                 throw ValidationException::withMessages([
                     'email' => ['The provider credentials are incorrect.'],
                 ]);

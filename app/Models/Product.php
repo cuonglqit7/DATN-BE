@@ -9,20 +9,7 @@ use Illuminate\Support\Facades\Cache;
 class Product extends Model
 {
     use HasFactory;
-    protected $fillable = ['product_name', 'slug', 'description', 'price', 'status', 'category_id'];
-
-    protected static function booted()
-    {
-        static::created(fn() => Cache::forget('products'));
-        static::updated(fn($product) => [
-            Cache::forget('products'),
-            Cache::forget("product_{$product->id}"),
-        ]);
-        static::deleted(fn($product) => [
-            Cache::forget('products'),
-            Cache::forget("product_{$product->id}"),
-        ]);
-    }
+    protected $fillable = ['product_name', 'slug', 'description', 'price', 'promotion_price', 'quantity_in_stock', 'quantity_sold', 'status', 'category_id'];
 
     public function category()
     {
@@ -41,15 +28,5 @@ class Product extends Model
     public function avatar()
     {
         return $this->hasOne(ProductImage::class)->where('is_primary', true);
-    }
-
-    public function articles()
-    {
-        return $this->belongsToMany(Article::class, 'product_articles', 'product_id', 'article_id');
-    }
-
-    public function discounts()
-    {
-        return $this->hasManyThrough(Discount::class, ProductDiscount::class, 'product_id', 'id', 'id', 'discount_id');
     }
 }

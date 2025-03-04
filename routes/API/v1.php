@@ -15,6 +15,9 @@ Route::prefix('v1')->group(function () {
 
     Route::middleware('auth:sanctum')->group(function () {
         Route::get('/user', [UserAPIController::class, 'show']);
-        Route::post('logout', [AuthAPIController::class, 'logout']);
+        Route::put('/user/{id}', [UserAPIController::class, 'update']);
+        Route::post('/logout', [AuthAPIController::class, 'logout']);
+
+        Route::put('/products/{id}', [ProductAPIController::class, 'update']);
     });
 });

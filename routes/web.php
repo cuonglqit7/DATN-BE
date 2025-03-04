@@ -3,6 +3,7 @@
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\ProductController;
+use App\Http\Controllers\ProductImageController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Auth;
@@ -17,11 +18,20 @@ Route::middleware('auth')->group(function () {
     Route::resource('users', UserController::class);
     Route::patch('/users/{id}/toggle-status', [UserController::class, 'toggleStatus'])->name('users.toggleStatus');
 
-    Route::resource('products', ProductController::class);
+
+    Route::resource('products', ProductController::class)->parameters([
+        'products' => 'product:slug'
+    ]);
     Route::patch('/products/{id}/toggle-status', [ProductController::class, 'toggleStatus'])->name('products.toggleStatus');
+
+    Route::resource('productImages', ProductImageController::class);
+    Route::patch('productImages/{id}/is-primary', [ProductImageController::class, 'isPrimary'])->name('productImages.isPrimary');
+
 
     Route::resource('roles', RoleController::class);
     Route::patch('/roles/{id}/toggle-status', [RoleController::class, 'toggleStatus'])->name('roles.toggleStatus');
+
+
     Route::resource('categories', CategoryController::class)->parameters([
         'categories' => 'category:slug'
     ]);

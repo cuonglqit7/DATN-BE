@@ -44,86 +44,176 @@
                 <input type="text" name="product_name" id="product_name" maxlength="100"
                     value="{{ $product->product_name }}"
                     class="mt-1 block w-full bg-gray-100 rounded-md border-gray-400 p-2 shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-                    placeholder="Nhập tên sản phẩm..." required oninput="updateCharCount()">
+                    placeholder="Nhập tên sản phẩm..." oninput="updateCharCount()">
                 <p id="char-count" class="text-xs text-gray-500 mt-1">0/100 ký tự</p>
+                @error('product_name')
+                    <p class="text-red-500 text-sm">{{ $message }}</p>
+                @enderror
             </div>
-            @error('product_name')
-                <p class="text-red-500 text-sm">{{ $message }}</p>
-            @enderror
+
 
             <div>
-                <label for="price" class="block text-sm font-medium text-gray-700">Giá</label>
+                <label for="price" class="block text-sm font-medium text-gray-700">Giá gốc</label>
                 <input type="number" name="price" id="price" min="1" value="{{ $product->price }}"
                     class="mt-1 block w-full bg-gray-100 rounded-md border-gray-400 p-2 shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-                    placeholder="Nhập giá sản phẩm..." required oninput="formatPrice(this)">
+                    placeholder="Nhập giá gốc sản phẩm..." oninput="formatPrice(this)">
                 <p id="formatted-price" class="text-xs text-gray-500 mt-1"></p>
+                @error('price')
+                    <p class="text-red-500 text-sm">{{ $message }}</p>
+                @enderror
             </div>
-            @error('price')
-                <p class="text-red-500 text-sm">{{ $message }}</p>
-            @enderror
+
+            <div>
+                <label for="promotion_price" class="block text-sm font-medium text-gray-700">Giá đã giảm</label>
+                <input type="number" name="promotion_price" id="promotion_price" min="1"
+                    value="{{ $product->promotion_price }}"
+                    class="mt-1 block w-full bg-gray-100 rounded-md border-gray-400 p-2 shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                    placeholder="Nhập giá giảm sản phẩm..." oninput="formatPromotionPrice(this)">
+                <p id="formatted-promotion_price" class="text-xs text-gray-500 mt-1"></p>
+                @error('promotion_price')
+                    <p class="text-red-500 text-sm">{{ $message }}</p>
+                @enderror
+            </div>
+
+
+            <div>
+                <label for="quantity_in_stock" class="block text-sm font-medium text-gray-700">Số lượng nhập vào</label>
+                <input type="number" name="quantity_in_stock" id="quantity_in_stock" min="0"
+                    value="{{ $product->quantity_sold }}"
+                    class="mt-1 block w-full bg-gray-100 rounded-md border-gray-400 p-2 shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                    placeholder="Nhập số sản phẩm nhập vào...">
+                @error('quantity_in_stock')
+                    <p class="text-red-500 text-sm">{{ $message }}</p>
+                @enderror
+            </div>
+
 
             <div>
                 <label for="category" class="block text-sm font-medium text-gray-700">Danh mục</label>
                 <select name="category" id="category"
                     class="mt-1 block w-full bg-gray-100 rounded-md border-2 border-gray-400 p-2 shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
-                    <option value="" disabled>Chọn danh mục</option>
+                    <option value="" disabled selected>Chọn danh mục</option>
                     @foreach ($categories as $category)
                         <option value="{{ $category->id }}"
                             {{ $product->category->category_name === $category->category_name ? 'selected' : '' }}>
                             {{ $category->category_name }}</option>
                     @endforeach
                 </select>
+                @error('category')
+                    <p class="text-red-500 text-sm">{{ $message }}</p>
+                @enderror
             </div>
-            @error('category')
-                <p class="text-red-500 text-sm">{{ $message }}</p>
-            @enderror
 
             <!-- Mô tả -->
             <div class="col-span-2">
                 <label for="description" class="block text-sm font-medium text-gray-700">Mô tả</label>
                 <textarea name="description" id="description" rows="4"
-                    class="mt-1 p-3 block w-full bg-gray-100 rounded-lg border-2 border-gray-300 bg-blue-20 focus:ring-blue-600 focus:border-blue-300 sm:text-sm"
-                    required>{{ $product->description }}</textarea>
+                    class="mt-1 p-3 block w-full bg-gray-100 rounded-lg border-2 border-gray-300 bg-blue-20 focus:ring-blue-600 focus:border-blue-300 sm:text-sm"></textarea>
+                @error('desciption')
+                    <p class="text-red-500 text-sm">{{ $message }}</p>
+                @enderror
             </div>
-            @error('desciption')
-                <p class="text-red-500 text-sm">{{ $message }}</p>
-            @enderror
 
             <div>
                 <label class="block text-sm font-medium text-gray-700">Trạng thái</label>
                 <div class="flex gap-4 mt-2">
                     <label class="flex items-center">
-                        <input type="radio" name="status" value="1" {{ $product->status === 1 ? 'checked' : '' }}
-                            class="hidden peer">
+                        <input type="radio" name="status" value="1" checked class="hidden peer">
                         <span
                             class="peer-checked:bg-blue-600 peer-checked:text-white px-4 py-2 rounded-md border border-gray-400 cursor-pointer">
                             ✅ Hiển thị
                         </span>
                     </label>
                     <label class="flex items-center">
-                        <input type="radio" name="status" value="0" {{ $product->status === 0 ? 'checked' : '' }}
-                            class="hidden peer">
+                        <input type="radio" name="status" value="0" class="hidden peer">
                         <span
                             class="peer-checked:bg-red-600 peer-checked:text-white px-4 py-2 rounded-md border border-gray-400 cursor-pointer">
                             🚫 Ẩn
                         </span>
                     </label>
                 </div>
+                @error('status')
+                    <p class="text-red-500 text-sm">{{ $message }}</p>
+                @enderror
             </div>
-            @error('status')
-                <p class="text-red-500 text-sm">{{ $message }}</p>
-            @enderror
+
 
             <!-- Nút xác nhận -->
             <div class="col-span-2 flex justify-start">
                 <button type="submit"
                     class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg px-5 py-2.5 text-center">Cập
-                    nhật sản phẩm</button>
+                    nhật
+                    sản phẩm</button>
             </div>
         </form>
     </div>
 @endsection
 @push('scripts')
+    <script>
+        let selectedFiles = [];
+        const maxFiles = 5;
+
+        function handleFiles(event) {
+            const input = event.target;
+            const newFiles = Array.from(input.files);
+
+            if (selectedFiles.length + newFiles.length > maxFiles) {
+                document.getElementById('file-warning').classList.remove('hidden');
+                return;
+            } else {
+                document.getElementById('file-warning').classList.add('hidden');
+            }
+
+            // Thêm file mới vào danh sách
+            selectedFiles = selectedFiles.concat(newFiles);
+
+            // Tạo DataTransfer để cập nhật input.files
+            const dataTransfer = new DataTransfer();
+            selectedFiles.forEach(file => dataTransfer.items.add(file));
+            input.files = dataTransfer.files; // Cập nhật input.files để gửi tất cả file
+
+            updateFileList();
+        }
+
+        function updateFileList() {
+            const fileList = document.getElementById('file-list');
+            fileList.innerHTML = '';
+
+            if (selectedFiles.length > 0) {
+                const ul = document.createElement('ul');
+                ul.classList.add('list-disc', 'pl-5');
+
+                selectedFiles.forEach((file, index) => {
+                    const li = document.createElement('li');
+                    li.classList.add('flex', 'justify-between', 'items-center', 'mb-1');
+
+                    li.innerHTML = `
+                    <span>${file.name}</span>
+                    <button onclick="removeFile(${index})" class="ml-3 text-red-500 text-xs hover:underline">
+                        Xóa
+                    </button>
+                `;
+
+                    ul.appendChild(li);
+                });
+
+                fileList.appendChild(ul);
+            }
+        }
+
+        function removeFile(index) {
+            selectedFiles.splice(index, 1);
+
+            // Tạo lại DataTransfer để cập nhật input.files
+            const dataTransfer = new DataTransfer();
+            selectedFiles.forEach(file => dataTransfer.items.add(file));
+            document.getElementById("images").files = dataTransfer.files;
+
+            updateFileList();
+        }
+    </script>
+
+
     <script>
         function updateCharCount() {
             let input = document.getElementById('product_name');
@@ -138,94 +228,37 @@
             document.getElementById('formatted-price').textContent =
                 value ? `Giá: ${parseInt(value).toLocaleString('vi-VN')} VND` : '';
         }
+
+        function formatPromotionPrice(input) {
+            let value = input.value.replace(/\D/g, '');
+            input.value = value;
+            document.getElementById('formatted-promotion_price').textContent =
+                value ? `Giá: ${parseInt(value).toLocaleString('vi-VN')} VND` : '';
+        }
     </script>
 
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const select = document.getElementById('discountSelect');
-            const list = document.getElementById('selectedDiscountsList');
-            const input = document.getElementById('discountsInput');
-
-            select.addEventListener('change', function() {
-                const selectedOption = select.options[select.selectedIndex];
-                const discountId = selectedOption.value;
-                const discountType = selectedOption.getAttribute('data-type');
-                const discountValue = selectedOption.getAttribute('data-value');
-
-                if (discountId && !document.querySelector(`li[data-id="${discountId}"]`)) {
-                    const listItem = document.createElement('li');
-                    listItem.setAttribute('data-id', discountId);
-                    listItem.classList.add('selected-discount', 'flex', 'justify-between', 'bg-gray-200',
-                        'p-2', 'rounded', 'mt-2');
-                    listItem.innerHTML =
-                        `${discountType} - ${discountValue} <button class="text-red-500 remove-discount">Xóa</button>`;
-
-                    list.appendChild(listItem);
-                    updateHiddenInput();
-                }
-            });
-
-            list.addEventListener('click', function(event) {
-                if (event.target.classList.contains('remove-discount')) {
-                    event.target.parentElement.remove();
-                    updateHiddenInput();
-                }
-            });
-
-            function updateHiddenInput() {
-                const selectedIds = Array.from(document.querySelectorAll('.selected-discount')).map(item => item
-                    .getAttribute('data-id'));
-                input.value = selectedIds.join(',');
-            }
-        });
-    </script>
-
-    <script>
-        let removedAttributes = [];
-        let newAttributes = [];
-
         function addAttribute() {
-            let nameInput = document.getElementById("attribute_name");
-            let valueInput = document.getElementById("attribute_value");
-
-            let name = nameInput.value.trim();
-            let value = valueInput.value.trim();
-
-            if (name === "" || value === "") {
-                alert("Vui lòng nhập đầy đủ thuộc tính và giá trị!");
-                return;
-            }
-
             let container = document.getElementById("attribute-list");
 
             let div = document.createElement("div");
-            div.classList.add("flex", "gap-3", "items-center", "attribute-item");
-
-
-            let inputId = document.createElement("input");
-            inputId.type = "hidden";
-            inputId.name = "attribute_id[]";
-            inputId.value = "new"; // Đánh dấu là thuộc tính mới
+            div.classList.add("flex", "gap-3", "items-center");
 
             let inputName = document.createElement("input");
             inputName.type = "text";
             inputName.name = "attribute_name[]";
-            inputName.value = name;
-            inputName.classList.add("mt-1", "block", "w-full", "bg-gray-100", "rounded-md", "border-gray-400", "p-2",
-                "shadow-sm", "focus:ring-blue-500", "focus:border-blue-500", "sm:text-sm");
-            inputName.oninput = function() {
-                markAsUpdated(inputId);
-            };
+            inputName.placeholder = "Tên thuộc tính";
+            inputName.required = true;
+            inputName.classList.add("block", "w-full", "rounded-md", "border-gray-400", "p-2", "shadow-sm",
+                "focus:ring-blue-500", "focus:border-blue-500", "sm:text-sm", "bg-gray-100");
 
             let inputValue = document.createElement("input");
             inputValue.type = "text";
             inputValue.name = "attribute_value[]";
-            inputValue.value = value;
-            inputValue.classList.add("mt-1", "block", "w-full", "bg-gray-100", "rounded-md", "border-gray-400", "p-2",
-                "shadow-sm", "focus:ring-blue-500", "focus:border-blue-500", "sm:text-sm");
-            inputValue.oninput = function() {
-                markAsUpdated(inputId);
-            };
+            inputValue.placeholder = "Giá trị";
+            inputValue.required = true;
+            inputValue.classList.add("block", "w-full", "rounded-md", "border-gray-400", "p-2", "shadow-sm",
+                "focus:ring-blue-500", "focus:border-blue-500", "sm:text-sm", "bg-gray-100");
 
             let removeBtn = document.createElement("button");
             removeBtn.innerHTML = "Xóa";
@@ -235,41 +268,11 @@
                 container.removeChild(div);
             };
 
-            div.appendChild(inputId);
             div.appendChild(inputName);
             div.appendChild(inputValue);
             div.appendChild(removeBtn);
+
             container.appendChild(div);
-
-            // Đánh dấu là thuộc tính mới
-            newAttributes.push({
-                name,
-                value
-            });
-
-            // Reset input fields
-            nameInput.value = "";
-            valueInput.value = "";
-        }
-
-        function markAsUpdated(inputId) {
-            if (inputId.value !== "new" && !newAttributes.includes(inputId.value)) {
-                inputId.value = "updated";
-            }
-        }
-
-        function removeAttribute(button, attributeId = null) {
-            let container = document.getElementById("attribute-list");
-            let attributeDiv = button.parentElement;
-
-            // Nếu thuộc tính có ID từ CSDL, ta lưu ID vào danh sách xóa
-            if (attributeId !== null) {
-                removedAttributes.push(attributeId);
-                document.getElementById("removed_attributes").value = JSON.stringify(removedAttributes);
-            }
-
-            // Xóa khỏi giao diện
-            container.removeChild(attributeDiv);
         }
     </script>
 @endpush
