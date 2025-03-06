@@ -14,6 +14,9 @@ use App\Http\Controllers\API\OrderController;
 use App\Http\Controllers\API\PaymentController;
 use App\Http\Controllers\ProductReviewController;
 use Illuminate\Support\Facades\Route;
+use L5Swagger\Http\Controllers\SwaggerController;
+
+Route::get('/api/documentation', [SwaggerController::class, 'api']);
 
 Route::prefix('v1')->group(function () {
     //người dùng
@@ -53,7 +56,12 @@ Route::prefix('v1')->group(function () {
 
     //payment
     Route::post('/payments', [PaymentController::class, 'createPayment']);
-    Route::post('/payments/{id}', [PaymentController::class, 'createPayment']);
+    Route::put('/payments/{id}', [PaymentController::class, 'updatePaymentStatus']);
+
+    //giảm giá
+    Route::post('/discounts/check', [DiscountController::class, 'check']);
+    Route::get('/discounts', [DiscountController::class, 'getAllDiscounts']);
+    Route::get('/discounts/{id}', [DiscountController::class, 'getDiscountById']);
 
     Route::middleware('auth:sanctum')->group(function () {
         //người dùng
@@ -67,20 +75,15 @@ Route::prefix('v1')->group(function () {
         Route::post('/removeFromFavorites', [ProductFavoriteController::class, 'removeFromFavorites']);
         Route::post('/isFavorite', [ProductFavoriteController::class, 'isFavorite']);
 
-        //giảm giá
-        Route::post('/discounts/check', [DiscountController::class, 'check']);
-        Route::get('/discounts', [DiscountController::class, 'getAllDiscounts']);
-        Route::get('/discounts/{id}', [DiscountController::class, 'getDiscountById']);
-
         //đơn hàng
         Route::get('/orders', [OrderController::class, 'getOrderByIp']);
 
         //Đánh giá sản phẩm
         Route::prefix('reviews')->group(function () {
-            Route::get('/product/{product_id}', [ProductReviewController::class, 'getReviewsByProduct']);
-            Route::post('/create', [ProductReviewController::class, 'createReview']);
-            Route::put('/update/{id}', [ProductReviewController::class, 'updateReview']);
-            Route::delete('/delete/{id}', [ProductReviewController::class, 'deleteReview']);
+            Route::get('/products/{product_id}/reviews', [ProductReviewController::class, 'getReviewsByProduct']);
+            Route::post('/', [ProductReviewController::class, 'createReview']);
+            Route::put('/{id}', [ProductReviewController::class, 'updateReview']);
+            Route::delete('/{id}', [ProductReviewController::class, 'deleteReview']);
         });
     });
 });

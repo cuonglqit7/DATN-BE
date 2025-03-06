@@ -9,6 +9,42 @@ use Illuminate\Http\Response;
 
 class CategoryController extends Controller
 {
+    /**
+     * @OA\Get(
+     *     path="/api/categories",
+     *     summary="Lấy danh sách danh mục sản phẩm",
+     *     tags={"Categories"},
+     *     @OA\Response(
+     *         response=200,
+     *         description="Lấy danh sách danh mục sản phẩm thành công",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Lấy danh sách danh mục sản phẩm thành công"),
+     *             @OA\Property(property="data", type="array",
+     *                 @OA\Items(
+     *                     @OA\Property(property="id", type="integer", example=1),
+     *                     @OA\Property(property="category_name", type="string", example="Điện thoại"),
+     *                     @OA\Property(property="slug", type="string", example="dien-thoai"),
+     *                     @OA\Property(property="position", type="integer", example=1),
+     *                     @OA\Property(property="description", type="string", nullable=true, example="Danh mục điện thoại cao cấp"),
+     *                     @OA\Property(property="parent_id", type="integer", nullable=true, example=null),
+     *                     @OA\Property(property="status", type="boolean", example=true),
+     *                     @OA\Property(property="created_at", type="string", format="date-time", example="2024-03-06T12:00:00Z"),
+     *                     @OA\Property(property="updated_at", type="string", format="date-time", example="2024-03-06T12:30:00Z")
+     *                 )
+     *             )
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=500,
+     *         description="Lấy danh sách danh mục sản phẩm thất bại",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Lấy danh sách danh mục sản phẩm thất bại"),
+     *             @OA\Property(property="errors", type="string", example="Lỗi server")
+     *         )
+     *     )
+     * )
+     */
+
     public function getAll(Request $request)
     {
         try {
@@ -22,6 +58,33 @@ class CategoryController extends Controller
             return $this->errorResponse("Lấy danh sách danh mục sản phẩm thất bại", $th->getMessage());
         }
     }
+
+    /**
+     * @OA\Get(
+     *     path="/api/categories/parent",
+     *     summary="Lấy danh sách danh mục cấp cha",
+     *     tags={"Categories"},
+     *     @OA\Response(
+     *         response=200,
+     *         description="Lấy danh sách danh mục cấp cha thành công",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Lấy danh sách danh mục cấp cha thành công"),
+     *             @OA\Property(property="data", type="array",
+     *                 @OA\Items(
+     *                     @OA\Property(property="id", type="integer", example=1),
+     *                     @OA\Property(property="category_name", type="string", example="Điện thoại"),
+     *                     @OA\Property(property="slug", type="string", example="dien-thoai"),
+     *                     @OA\Property(property="position", type="integer", example=1),
+     *                     @OA\Property(property="description", type="string", nullable=true, example="Danh mục điện thoại cao cấp"),
+     *                     @OA\Property(property="status", type="boolean", example=true),
+     *                     @OA\Property(property="created_at", type="string", format="date-time", example="2024-03-06T12:00:00Z"),
+     *                     @OA\Property(property="updated_at", type="string", format="date-time", example="2024-03-06T12:30:00Z")
+     *                 )
+     *             )
+     *         )
+     *     )
+     * )
+     */
 
     public function getParentCategories()
     {
@@ -38,6 +101,41 @@ class CategoryController extends Controller
             return $this->errorResponse("Lấy danh sách danh mục cấp cha thất bại", $th->getMessage());
         }
     }
+
+    /**
+     * @OA\Get(
+     *     path="/api/categories/{parent_id}/children",
+     *     summary="Lấy danh sách danh mục con theo ID danh mục cha",
+     *     tags={"Categories"},
+     *     @OA\Parameter(
+     *         name="parent_id",
+     *         in="path",
+     *         required=true,
+     *         description="ID của danh mục cha",
+     *         @OA\Schema(type="integer", example=1)
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Lấy danh sách danh mục con thành công",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Lấy danh sách danh mục con thành công"),
+     *             @OA\Property(property="data", type="array",
+     *                 @OA\Items(
+     *                     @OA\Property(property="id", type="integer", example=2),
+     *                     @OA\Property(property="category_name", type="string", example="iPhone"),
+     *                     @OA\Property(property="slug", type="string", example="iphone"),
+     *                     @OA\Property(property="position", type="integer", example=2),
+     *                     @OA\Property(property="description", type="string", nullable=true, example="Danh mục điện thoại iPhone"),
+     *                     @OA\Property(property="parent_id", type="integer", example=1),
+     *                     @OA\Property(property="status", type="boolean", example=true),
+     *                     @OA\Property(property="created_at", type="string", format="date-time", example="2024-03-06T12:00:00Z"),
+     *                     @OA\Property(property="updated_at", type="string", format="date-time", example="2024-03-06T12:30:00Z")
+     *                 )
+     *             )
+     *         )
+     *     )
+     * )
+     */
 
     public function getChildCategories($parent_id)
     {

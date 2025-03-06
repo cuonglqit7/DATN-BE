@@ -23,7 +23,7 @@ class ProductImageSeeder extends Seeder
         foreach ($urls1 as $url) {
             ProductImage::create([
                 'product_id' => 29,
-                'image_url' => $url,
+                'image_url' => 'products/' . $url,
                 'alt_text' => $url,
                 'created_at' => now(),
                 'updated_at' => now()
@@ -39,7 +39,7 @@ class ProductImageSeeder extends Seeder
         foreach ($urls2 as $url) {
             ProductImage::create([
                 'product_id' => 12,
-                'image_url' => $url,
+                'image_url' => 'products/' . $url,
                 'alt_text' => $url,
                 'created_at' => now(),
                 'updated_at' => now()
@@ -55,7 +55,7 @@ class ProductImageSeeder extends Seeder
         foreach ($urls3 as $url) {
             ProductImage::create([
                 'product_id' => 15,
-                'image_url' => $url,
+                'image_url' => 'products/' . $url,
                 'alt_text' => $url,
                 'created_at' => now(),
                 'updated_at' => now()
@@ -71,7 +71,7 @@ class ProductImageSeeder extends Seeder
         foreach ($urls3 as $url) {
             ProductImage::create([
                 'product_id' => 13,
-                'image_url' => $url,
+                'image_url' => 'products/' . $url,
                 'alt_text' => $url,
                 'created_at' => now(),
                 'updated_at' => now()
@@ -87,7 +87,7 @@ class ProductImageSeeder extends Seeder
         foreach ($urls4 as $url) {
             ProductImage::create([
                 'product_id' => 16,
-                'image_url' => $url,
+                'image_url' => 'products/' . $url,
                 'alt_text' => $url,
                 'created_at' => now(),
                 'updated_at' => now()
@@ -103,7 +103,7 @@ class ProductImageSeeder extends Seeder
         foreach ($urls5 as $url) {
             ProductImage::create([
                 'product_id' => 11,
-                'image_url' => $url,
+                'image_url' => 'products/' . $url,
                 'alt_text' => $url,
                 'created_at' => now(),
                 'updated_at' => now()
@@ -119,7 +119,7 @@ class ProductImageSeeder extends Seeder
         foreach ($urls6 as $url) {
             ProductImage::create([
                 'product_id' => 14,
-                'image_url' => $url,
+                'image_url' => 'products/' . $url,
                 'alt_text' => $url,
                 'created_at' => now(),
                 'updated_at' => now()
@@ -135,7 +135,7 @@ class ProductImageSeeder extends Seeder
         foreach ($urls7 as $url) {
             ProductImage::create([
                 'product_id' => 21,
-                'image_url' => $url,
+                'image_url' => 'products/' . $url,
                 'alt_text' => $url,
                 'created_at' => now(),
                 'updated_at' => now()

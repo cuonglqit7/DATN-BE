@@ -11,6 +11,25 @@ use Illuminate\Support\Facades\Validator;
 
 class PaymentController extends Controller
 {
+    /**
+     * @OA\Post(
+     *     path="/api/payments",
+     *     summary="Create a payment",
+     *     tags={"Payments"},
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             required={"order_id", "payment_method", "transaction_id", "amount"},
+     *             @OA\Property(property="order_id", type="integer", example=1),
+     *             @OA\Property(property="payment_method", type="string", enum={"Bank_transfer", "Momo"}),
+     *             @OA\Property(property="transaction_id", type="string", example="TXN123456"),
+     *             @OA\Property(property="amount", type="number", format="float", example=100.50)
+     *         )
+     *     ),
+     *     @OA\Response(response=201, description="Payment created successfully"),
+     *     @OA\Response(response=422, description="Validation errors")
+     * )
+     */
     public function createPayment(Request $request)
     {
         try {
@@ -49,6 +68,29 @@ class PaymentController extends Controller
         }
     }
 
+    /**
+     * @OA\Put(
+     *     path="/api/payments/{id}",
+     *     summary="Update payment status",
+     *     tags={"Payments"},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         required=true,
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             required={"payment_status"},
+     *             @OA\Property(property="payment_status", type="string", enum={"Pending", "Completed", "Failed", "Refunded"})
+     *         )
+     *     ),
+     *     @OA\Response(response=200, description="Payment status updated successfully"),
+     *     @OA\Response(response=422, description="Validation errors"),
+     *     @OA\Response(response=404, description="Payment not found")
+     * )
+     */
     public function updatePaymentStatus(Request $request, $id)
     {
         try {

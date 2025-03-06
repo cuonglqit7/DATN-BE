@@ -7,10 +7,46 @@ use App\Models\ProductReview;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Validator;
 
+/**
+ * @OA\Tag(
+ *     name="Product Reviews",
+ *     description="API đánh giá sản phẩm"
+ * )
+ */
 class ProductReviewController extends Controller
 {
     /**
-     * Lấy danh sách đánh giá của một sản phẩm (chỉ lấy đánh giá đã duyệt)
+     * @OA\Get(
+     *     path="/api/products/{product_id}/reviews",
+     *     summary="Lấy danh sách đánh giá của một sản phẩm",
+     *     tags={"Product Reviews"},
+     *     security={{"bearerAuth":{}}},
+     *     @OA\Parameter(
+     *         name="product_id",
+     *         in="path",
+     *         required=true,
+     *         description="ID của sản phẩm",
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Danh sách đánh giá",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="reviews", type="array",
+     *                 @OA\Items(
+     *                     @OA\Property(property="id", type="integer", example=1),
+     *                     @OA\Property(property="user", type="object",
+     *                         @OA\Property(property="id", type="integer", example=2),
+     *                         @OA\Property(property="name", type="string", example="Nguyễn Văn A")
+     *                     ),
+     *                     @OA\Property(property="rating", type="integer", example=5),
+     *                     @OA\Property(property="comment", type="string", example="Sản phẩm rất tốt!"),
+     *                     @OA\Property(property="created_at", type="string", format="date-time", example="2024-03-06T12:00:00Z")
+     *                 )
+     *             )
+     *         )
+     *     )
+     * )
      */
     public function getReviewsByProduct($product_id)
     {
@@ -23,9 +59,7 @@ class ProductReviewController extends Controller
         return response()->json(['reviews' => $reviews], Response::HTTP_OK);
     }
 
-    /**
-     * Kiểm tra từ cấm
-     */
+
     private function containsBannedWords($text)
     {
         $badWords = config('banned_words.bad_words');
@@ -37,8 +71,38 @@ class ProductReviewController extends Controller
         return false;
     }
 
+
     /**
-     * Tạo đánh giá mới
+     * @OA\Post(
+     *     path="/api/reviews",
+     *     summary="Tạo đánh giá mới",
+     *     tags={"Product Reviews"},
+     *     security={{"bearerAuth":{}}},
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             @OA\Property(property="product_id", type="integer", example=1),
+     *             @OA\Property(property="user_id", type="integer", example=2),
+     *             @OA\Property(property="rating", type="integer", example=4),
+     *             @OA\Property(property="comment", type="string", example="Chất lượng khá ổn!")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=201,
+     *         description="Đánh giá đã được thêm",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Đánh giá đã được thêm thành công"),
+     *             @OA\Property(property="data", type="object",
+     *                 @OA\Property(property="id", type="integer", example=1),
+     *                 @OA\Property(property="product_id", type="integer", example=1),
+     *                 @OA\Property(property="user_id", type="integer", example=2),
+     *                 @OA\Property(property="rating", type="integer", example=4),
+     *                 @OA\Property(property="comment", type="string", example="Chất lượng khá ổn!"),
+     *                 @OA\Property(property="status", type="boolean", example=true)
+     *             )
+     *         )
+     *     )
+     * )
      */
     public function createReview(Request $request)
     {
@@ -73,7 +137,38 @@ class ProductReviewController extends Controller
     }
 
     /**
-     * Cập nhật đánh giá
+     * @OA\Put(
+     *     path="/api/reviews/{id}",
+     *     summary="Cập nhật đánh giá",
+     *     tags={"Product Reviews"},
+     *     security={{"bearerAuth":{}}},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         required=true,
+     *         description="ID của đánh giá",
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             @OA\Property(property="rating", type="integer", example=5),
+     *             @OA\Property(property="comment", type="string", example="Sản phẩm thực sự tuyệt vời!")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Đánh giá đã được cập nhật",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Đánh giá đã được cập nhật"),
+     *             @OA\Property(property="data", type="object",
+     *                 @OA\Property(property="id", type="integer", example=1),
+     *                 @OA\Property(property="rating", type="integer", example=5),
+     *                 @OA\Property(property="comment", type="string", example="Sản phẩm thực sự tuyệt vời!")
+     *             )
+     *         )
+     *     )
+     * )
      */
     public function updateReview(Request $request, $id)
     {
@@ -110,7 +205,32 @@ class ProductReviewController extends Controller
     }
 
     /**
-     * Xóa đánh giá
+     * @OA\Delete(
+     *     path="/api/reviews/{id}",
+     *     summary="Xóa đánh giá",
+     *     tags={"Product Reviews"},
+     *     security={{"bearerAuth":{}}},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         required=true,
+     *         description="ID của đánh giá",
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Đánh giá đã bị xóa",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Đánh giá đã bị xóa")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Đánh giá không tồn tại",
+     *                @OA\Property(property="error", type="string", example="Đánh giá không tồn tại")
+     *         )
+     *     )
+     * )
      */
     public function deleteReview($id)
     {
