@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('payments', function (Blueprint $table) {
             $table->id();
             $table->foreignId('order_id')->constrained('orders', 'id')->onDelete('cascade');
-            $table->enum('payment_method', ['Bank_transfer', 'Momo']);
+            $table->enum('payment_method', ['Bank_transfer', 'Momo', 'COD']);
             $table->string('transaction_id');
             $table->decimal('amount', 10, 2);
             $table->enum('payment_status', ['Pending', 'Completed', 'Failed', 'Refunded'])->default('Pending');

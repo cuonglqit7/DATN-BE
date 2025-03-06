@@ -4,6 +4,7 @@ use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ProductImageController;
+use App\Http\Controllers\ProductReviewController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Auth;
@@ -36,4 +37,16 @@ Route::middleware('auth')->group(function () {
         'categories' => 'category:slug'
     ]);
     Route::patch('/categories/{id}/toggle-status', [CategoryController::class, 'toggleStatus'])->name('categories.toggleStatus');
+
+    //đánh giá sản phẩm
+    Route::prefix('reviews')->group(function () {
+        Route::get('/product/{product_id}', [ProductReviewController::class, 'getReviewsByProduct']);
+        Route::post('/create', [ProductReviewController::class, 'createReview']);
+        Route::put('/update/{id}', [ProductReviewController::class, 'updateReview']);
+        Route::delete('/delete/{id}', [ProductReviewController::class, 'deleteReview']);
+
+        // Route dành cho admin
+        Route::post('/approve/{id}', [ProductReviewController::class, 'approveReview']);
+        Route::post('/reject/{id}', [ProductReviewController::class, 'rejectReview']);
+    });
 });

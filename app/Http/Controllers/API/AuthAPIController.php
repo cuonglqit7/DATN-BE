@@ -22,14 +22,14 @@ class AuthAPIController extends Controller
 
             if (!$user || !Hash::check(request('password'), $user->password) || !$user->hasRole(['user'])) {
                 throw ValidationException::withMessages([
-                    'email' => ['The provider credentials are incorrect.'],
+                    'email' => ['Thông tin đăng nhập của nhà cung cấp không chính xác.'],
                 ]);
             }
 
             $token = $user->createToken('access_token')->plainTextToken;
 
             return response()->json([
-                'message' => 'Login successfully',
+                'message' => 'Đăng nhập thành công',
                 'access_token' => $token,
             ], Response::HTTP_OK);
         } catch (\Throwable $th) {
@@ -54,7 +54,7 @@ class AuthAPIController extends Controller
             $token = $user->createToken('auth_token')->plainTextToken;
 
             return response()->json([
-                'message' => 'Register user successfully',
+                'message' => 'Đăng ký thành công',
                 'access_token' => $token,
             ], Response::HTTP_OK);
         } catch (\Throwable $th) {
@@ -76,7 +76,7 @@ class AuthAPIController extends Controller
             request()->user()->currentAccessToken()->delete();
 
             return response()->json([
-                'message' => 'Logged out'
+                'message' => 'Đăng xuất thành công'
             ]);
         } catch (\Throwable $th) {
             return response()->json([

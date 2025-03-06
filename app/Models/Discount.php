@@ -7,6 +7,8 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Discount extends Model
 {
+    use HasFactory;
+
     protected $fillable = [
         'discount_type',
         'discount_value',
@@ -14,4 +16,9 @@ class Discount extends Model
         'end_date',
         'created_at',
     ];
+
+    public function orders()
+    {
+        return $this->belongsToMany(Order::class, 'order_discount');
+    }
 }

@@ -24,6 +24,7 @@ return new class extends Migration
             $table->enum('status', ['Pending', 'Completed', 'Cancelled'])->default('Pending');
             $table->string('user_note', 200)->nullable();
             $table->string('admin_note', 200)->nullable();
+            $table->string('ip_address', 45);
             $table->timestamps();
         });
     }
