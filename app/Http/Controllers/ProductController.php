@@ -27,14 +27,23 @@ class ProductController extends Controller
      */
     public function index(Request $request)
     {
-        $numperpage = $request->record_number ?? 10;
+        $numperpage = $request->record_number ?? 5;
         $products = Product::query()
             ->when($request->product_name, function ($query) use ($request) {
                 $query->where('product_name', 'like', '%' . $request->product_name . '%');
             })
+            ->with('productReviews')
+            ->withAvg('productReviews', 'rating')
             ->orderBy('created_at', 'DESC')
             ->paginate($numperpage);
-        return view('products.index', compact('products', 'numperpage'));
+
+        $notifications = [];
+        foreach ($products as $product) {
+            if ($product->quantity_in_stock < 10) {
+                $notifications["quantity_in_tock"][$product->id] = "Số lượng sản phẩm " . $product->product_name . " hiện tại còn " . $product->quantity_in_stock . " đã tới ngưỡng cảnh báo 10 với trạng thái tồn kho thấp.";
+            }
+        }
+        return view('products.index', compact('products', 'numperpage', 'notifications'));
     }
 
     /**
@@ -131,13 +140,13 @@ class ProductController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        dd($request->all());
         $validator = Validator::make($request->all(), [
             'product_name'   => 'required|string|max:255',
             'price'          => 'required|numeric|min:0',
             'category'       => 'required',
             'attribute_name' => 'nullable|array',
             'attribute_value' => 'nullable|array',
+            'quantity_in_stock' => 'required|numeric|min:0',
             'description'    => 'nullable|string',
             'status'         => 'required|boolean',
             'images'         => 'nullable|array|max:5',
@@ -155,6 +164,7 @@ class ProductController extends Controller
             'product_name' => $request->product_name,
             'slug' => Str::slug($request->product_name),
             'description' => $request->description,
+            'quantity_in_stock' => $request->quantity_in_stock,
             'price' => $request->price,
             'status' => $request->status,
             'category_id' => $request->category
@@ -179,5 +189,47 @@ class ProductController extends Controller
         $product->status = !$product->status;
         $product->save();
         return back()->with('success', 'Trạng thái sản phẩm đã được cập nhật!');
+    }
+
+    public function toggleFeatured($id)
+    {
+        $product = Product::find($id);
+        $product->featured = !$product->featured;
+        $product->save();
+        return back()->with('success', 'Sản phẩm nổi bật đã được cập nhật!');
+    }
+
+    public function toggleBestSelling($id)
+    {
+        $product = Product::find($id);
+        $product->best_selling = !$product->best_selling;
+        $product->save();
+        return back()->with('success', 'Sản phẩm bán chạy đã được cập nhật!');
+    }
+
+    public function bulkFeature(Request $request)
+    {
+        $productIds = explode(',', $request->input('product_ids'));
+
+        if (empty($productIds) || count($productIds) === 0) {
+            return redirect()->back()->with('error', 'Vui lòng chọn ít nhất một sản phẩm.');
+        }
+
+        Product::whereIn('id', $productIds)->update(['featured' => true]);
+
+        return redirect()->back()->with('success', 'Đã đánh dấu nổi bật các sản phẩm đã chọn.');
+    }
+
+    public function bulkBestSelling(Request $request)
+    {
+        $productIds = explode(',', $request->input('product_ids'));
+
+        if (empty($productIds) || count($productIds) === 0) {
+            return redirect()->back()->with('error', 'Vui lòng chọn ít nhất một sản phẩm.');
+        }
+
+        Product::whereIn('id', $productIds)->update(['best_selling' => true]);
+
+        return redirect()->back()->with('success', 'Đã đánh dấu bán chạy các sản phẩm đã chọn.');
     }
 }

@@ -1,6 +1,6 @@
 @props(['active'])
 
-<nav class="flex flex-col space-y-2 bg-gray-800 p-4 rounded-lg text-white w-64">
+<nav class="flex flex-col space-y-2 p-4 rounded-lg text-white w-64">
     <!-- Dashboard -->
     <a href="{{ route('home') }}"
         class="flex items-center px-3 py-2 rounded text-sm transition-all duration-200
@@ -92,14 +92,16 @@
         </svg>
         Khách hàng
     </a>
+    @can('role-list')
+        <a href="{{ route('roles.index') }}"
+            class="flex items-center px-3 py-2 rounded text-sm transition-all duration-200
+                    {{ $active === 'role' ? 'bg-blue-600' : 'hover:bg-gray-700' }}">
+            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                xmlns="http://www.w3.org/2000/svg">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+            </svg>
+            Quyền hạng
+        </a>
+    @endcan
 
-    <a href="{{ route('roles.index') }}"
-        class="flex items-center px-3 py-2 rounded text-sm transition-all duration-200
-               {{ $active === 'role' ? 'bg-blue-600' : 'hover:bg-gray-700' }}">
-        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"
-            xmlns="http://www.w3.org/2000/svg">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-        </svg>
-        Quyền hạng
-    </a>
 </nav>

@@ -21,14 +21,61 @@
                     </li>
                 </ol>
             </nav>
-            @can('product-create')
-                <a href="{{ route('products.create') }}"
-                    class="bg-blue-500 text-white px-3 py-2 rounded hover:bg-blue-600 text-xs">Thêm sản phẩm</a>
-            @endcan
-
         </div>
         <hr class="h-px my-2 bg-gray-200 border-0 dark:bg-gray-700">
-        <div class="flex justify-end">
+        @if ($notifications)
+            <div class="space-y-3">
+                @if ($notifications['quantity_in_tock'])
+                    @foreach ($notifications['quantity_in_tock'] as $index => $notification)
+                        <div class="flex items-center justify-between bg-red-50 p-3 rounded-lg shadow-md">
+                            <div class="flex items-center space-x-3">
+                                <svg class="w-6 h-6 text-yellow-500 dark:text-white" aria-hidden="true"
+                                    xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor"
+                                    viewBox="0 0 24 24">
+                                    <path fill-rule="evenodd"
+                                        d="M2 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10S2 17.523 2 12Zm11-4a1 1 0 1 0-2 0v5a1 1 0 1 0 2 0V8Zm-1 7a1 1 0 1 0 0 2h.01a1 1 0 1 0 0-2H12Z"
+                                        clip-rule="evenodd" />
+                                </svg>
+
+                                <span class="font-semibold">{{ $notification }}</span>
+                            </div>
+                            <form action="{{ route('products.edit', $index) }}" method="GET">
+                                @csrf
+                                <button
+                                    class="bg-yellow-500 hover:bg-yellow-600 text-white font-medium px-3 py-2 rounded transition duration-300">
+                                    Giải quyết
+                                </button>
+                            </form>
+                        </div>
+                    @endforeach
+                @endif
+
+            </div>
+        @endif
+
+        <div class="flex justify-between align-center ">
+            <div class="flex justify-start items-center gap-2">
+                <form id="bulk-feature-form" action="{{ route('products.bulkFeature') }}" method="POST">
+                    @csrf
+                    <input type="hidden" name="product_ids" id="bulk-feature-input">
+                    <button type="button"
+                        class="bulk-action-btn bg-green-500 text-white px-3 py-2 rounded hover:bg-green-600 text-xs"
+                        data-target="bulk-feature-input">
+                        Đánh dấu nổi bật
+                    </button>
+                </form>
+
+                <form id="bulk-best-selling-form" action="{{ route('products.bulkBestSelling') }}" method="POST">
+                    @csrf
+                    <input type="hidden" name="product_ids" id="bulk-best-selling-input">
+                    <button type="button"
+                        class="bulk-action-btn bg-green-500 text-white px-3 py-2 rounded hover:bg-green-600 text-xs"
+                        data-target="bulk-best-selling-input">
+                        Đánh dấu bán chạy
+                    </button>
+                </form>
+            </div>
+
             <form action="{{ route('products.index') }}" method="POST"
                 class="flex flex-wrap justify-end items-center gap-2 my-4">
                 @csrf
@@ -36,54 +83,99 @@
                 <div>
                     <select id="record_number" name="record_number"
                         class="block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
-                        <option value="5" {{ $numperpage == 5 ? 'selected' : '' }}>5</option>
-                        <option value="10" {{ $numperpage == 10 ? 'selected' : '' }}>10</option>
-                        <option value="15" {{ $numperpage == 15 ? 'selected' : '' }}>15</option>
-                        <option value="20" {{ $numperpage == 20 ? 'selected' : '' }}>20</option>
+                        <option value="5" {{ old('record_number', $numperpage) == 5 ? 'selected' : '' }}>5</option>
+                        <option value="10" {{ old('record_number', $numperpage) == 10 ? 'selected' : '' }}>10</option>
+                        <option value="15" {{ old('record_number', $numperpage) == 15 ? 'selected' : '' }}>15</option>
+                        <option value="20" {{ old('record_number', $numperpage) == 20 ? 'selected' : '' }}>20</option>
                     </select>
                 </div>
-                <input type="text" name="product_name" placeholder="Tìm kiếm" value="{{ request('product_name') }}"
-                    class="border rounded p-2 text-sm" />
+                <input type="text" name="product_name" placeholder="Tìm kiếm"
+                    value="{{ old('product_name', request('product_name')) }}" class="border rounded p-2 text-sm" />
                 <button type="submit"
                     class="bg-blue-500 text-white px-3 py-2 rounded hover:bg-blue-600 text-xs">Tìm</button>
                 <a href="{{ route('products.index') }}"
                     class="bg-gray-400 text-white px-3 py-2 rounded hover:bg-gray-500 text-xs">Xóa lọc</a>
+                @can('product-create')
+                    <a href="{{ route('products.create') }}"
+                        class="bg-blue-500 text-white px-3 py-2 rounded hover:bg-blue-600 text-xs">Thêm sản phẩm</a>
+                @endcan
             </form>
+
         </div>
 
-        <table class="w-full border-collapse bg-white shadow-lg rounded-lg text-sm">
+        <table class="w-full rtl:text-right border-collapse bg-white shadow-lg rounded-lg text-sm">
             <thead>
                 <tr class="bg-gray-100 text-left">
-                    <th class="p-1"><input type="checkbox" id="selectAll" class="accent-blue-500 hover:cursor-pointer">
+                    <th class="p-2">
+                        <input type="checkbox" id="selectAll">
                     </th>
                     <th class="p-2 max-w-24">Tên sản phẩm</th>
-                    <th class="p-2 ps-3">Giá gốc</th>
-                    <th class="p-2 ps-3">Giá giảm</th>
+                    <th class="p-2 ps-3">Giá cả</th>
                     <th class="p-2">Danh mục</th>
                     <th class="p-2">Tồn kho</th>
-                    <th class="p-2">Đã bán được</th>
-                    <th class="p-2">Trạng thái</th>
+                    <th class="p-2">Số sao</th>
+                    <th class="p-2">Đã bán</th>
+                    <th class="p-2 text-center">Bán chạy</th>
+                    <th class="p-2 text-center">Nổi bật</th>
+                    <th class="p-2 ">Trạng thái</th>
                     <th class="p-2">Hành động</th>
                 </tr>
             </thead>
             <tbody>
                 @foreach ($products as $product)
-                    <tr class="border-t hover:bg-gray-50 transition-all duration-200">
-                        <td class="p-1 text-left">
-                            <input type="checkbox" name="selected_products[]" value="{{ $product->id }}"
-                                class="accent-blue-500">
+                    <tr class="border-t hover:bg-gray-100 transition-all duration-200 even:bg-gray-50">
+                        <td class="p-2 text-left">
+                            <input type="checkbox" name="product_ids[]" value="{{ $product->id }}"
+                                class="accent-blue-500 product-checkbox">
                         </td>
                         <td class="p-1 max-w-24 overflow-hidden text-ellipsis whitespace-nowrap">
                             <a href="{{ route('products.show', $product->slug) }}" title="{{ $product->product_name }}"
                                 class="font-semibold text-blue-600 hover:underline">{{ $product->product_name }}</a>
                         </td>
                         <td class="p-1 ps-3">
-                            {{ number_format($product->price, 0, ',', '.') }} VNĐ
+                            @if ($product->price == $product->promotion_price)
+                                {{ number_format($product->price, 0, ',', '.') }} VNĐ
+                            @else
+                                <del>{{ number_format($product->price, 0, ',', '.') }} VNĐ</del> <br>
+
+                                <span
+                                    class="text-red-600 font-medium">{{ number_format($product->promotion_price, 0, ',', '.') }}
+                                    VNĐ</span>
+                            @endif
+
                         </td>
-                        <td class="p-1 ps-3">{{ number_format($product->promotion_price, 0, ',', '.') }} VNĐ</td>
+
                         <td class="p-1 ps-3">{{ $product->category->category_name }}</td>
                         <td class="p-1 ps-3">{{ $product->quantity_in_stock }}</td>
-                        <td class="p-1 ps-3">{{ $product->quantity_sold }}</td>
+                        <td class="p-1 ps-3">{{ number_format($product->product_reviews_avg_rating, 0) }}⭐</td>
+                        <td class="p-1 ps-3"><span class="text-red-600 font-medium">{{ $product->quantity_sold }}</span>
+                        </td>
+                        <td class="p-1 ps-3">
+                            @can('product-edit')
+                                <form action="{{ route('products.toggleBestSelling', $product->id) }}" method="POST">
+                                    @csrf
+                                    @method('PATCH')
+                                    <div class="flex items-center justify-center mb-4">
+                                        <input type="checkbox" value="" onchange="this.form.submit()"
+                                            {{ $product->best_selling ? 'checked' : '' }}
+                                            class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded-sm focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+                                    </div>
+                                </form>
+                            @endcan
+                        </td>
+                        <td>
+                            @can('product-edit')
+                                <form action="{{ route('products.toggleFeatured', $product->id) }}" method="POST">
+                                    @csrf
+                                    @method('PATCH')
+                                    <div class="flex items-center justify-center mb-4">
+                                        <input type="checkbox" value="" onchange="this.form.submit()"
+                                            {{ $product->featured ? 'checked' : '' }}
+                                            class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded-sm focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+                                    </div>
+                                </form>
+                            @endcan
+                        </td>
                         <td class="p-1 ps-3">
                             @can('product-edit')
                                 <form action="{{ route('products.toggleStatus', $product->id) }}" method="POST">
@@ -150,15 +242,40 @@
     </div>
 @endsection
 @push('scripts')
-    {{-- chọn nhiều danh mục --}}
     <script>
-        document.getElementById('selectAll').addEventListener('click', function() {
-            const checkboxes = document.querySelectorAll('input[name="selected_products[]"]');
-            checkboxes.forEach(checkbox => {
-                checkbox.checked = this.checked;
+        document.addEventListener("DOMContentLoaded", function() {
+
+            const productCheckboxes = document.querySelectorAll(".product-checkbox");
+
+            const selectAllCheckbox = document.getElementById("selectAll");
+            selectAllCheckbox.addEventListener("change", function() {
+                productCheckboxes.forEach(checkbox => {
+                    checkbox.checked = this.checked;
+                });
+            });
+
+            document.querySelectorAll(".bulk-action-btn").forEach(button => {
+                button.addEventListener("click", function() {
+                    const targetInputId = this.dataset.target;
+                    const targetInput = document.getElementById(targetInputId);
+
+                    const selectedIds = Array.from(productCheckboxes)
+                        .filter(checkbox => checkbox.checked)
+                        .map(checkbox => checkbox.value);
+
+                    if (selectedIds.length === 0) {
+                        alert("Vui lòng chọn ít nhất một sản phẩm.");
+                        return;
+                    }
+
+                    targetInput.value = selectedIds.join(",");
+
+                    this.closest("form").submit();
+                });
             });
         });
     </script>
+
     <script>
         @if (session('success'))
             toastr.options = {

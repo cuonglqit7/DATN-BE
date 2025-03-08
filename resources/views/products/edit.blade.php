@@ -79,7 +79,7 @@
             <div>
                 <label for="quantity_in_stock" class="block text-sm font-medium text-gray-700">Số lượng nhập vào</label>
                 <input type="number" name="quantity_in_stock" id="quantity_in_stock" min="0"
-                    value="{{ $product->quantity_sold }}"
+                    value="{{ $product->quantity_in_stock }}"
                     class="mt-1 block w-full bg-gray-100 rounded-md border-gray-400 p-2 shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
                     placeholder="Nhập số sản phẩm nhập vào...">
                 @error('quantity_in_stock')

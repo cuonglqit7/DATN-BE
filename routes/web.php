@@ -24,6 +24,12 @@ Route::middleware('auth')->group(function () {
         'products' => 'product:slug'
     ]);
     Route::patch('/products/{id}/toggle-status', [ProductController::class, 'toggleStatus'])->name('products.toggleStatus');
+    Route::patch('/products/{id}/toggle-featured', [ProductController::class, 'toggleFeatured'])->name('products.toggleFeatured');
+    Route::patch('/products/{id}/toggle-best-selling', [ProductController::class, 'toggleBestSelling'])->name('products.toggleBestSelling');
+    Route::post('/products/toggle-all', [ProductController::class, 'toggleAll'])->name('products.toggleAll');
+    Route::post('/products/bulk-feature', [ProductController::class, 'bulkFeature'])->name('products.bulkFeature');
+    Route::post('/products/bulk-best-selling', [ProductController::class, 'bulkBestSelling'])->name('products.bulkBestSelling');
+
 
     Route::resource('productImages', ProductImageController::class);
     Route::patch('productImages/{id}/is-primary', [ProductImageController::class, 'isPrimary'])->name('productImages.isPrimary');

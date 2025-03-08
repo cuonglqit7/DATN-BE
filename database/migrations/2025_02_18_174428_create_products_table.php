@@ -20,6 +20,8 @@ return new class extends Migration
             $table->decimal('promotion_price', 10, 2)->nullable();
             $table->integer('quantity_in_stock')->notNull()->default(0);
             $table->integer('quantity_sold')->default(0);
+            $table->boolean('best_selling')->default(false);
+            $table->boolean('featured')->default(false);
             $table->boolean('status')->default(true);
             $table->timestamps();
 
