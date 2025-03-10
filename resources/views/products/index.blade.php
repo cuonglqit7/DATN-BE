@@ -55,9 +55,10 @@
 
         <div class="flex justify-between align-center ">
             <div class="flex justify-start items-center gap-2">
-                <form id="bulk-feature-form" action="{{ route('products.bulkFeature') }}" method="POST">
+                <form id="bulk-feature-form" action="{{ route('products.toggleOn') }}" method="POST">
                     @csrf
                     <input type="hidden" name="product_ids" id="bulk-feature-input">
+                    <input type="hidden" name="fields" value="featured">
                     <button type="button"
                         class="bulk-action-btn bg-green-500 text-white px-3 py-2 rounded hover:bg-green-600 text-xs"
                         data-target="bulk-feature-input">
@@ -65,13 +66,36 @@
                     </button>
                 </form>
 
-                <form id="bulk-best-selling-form" action="{{ route('products.bulkBestSelling') }}" method="POST">
+                <form id="bulk-best-selling-form" action="{{ route('products.toggleOn') }}" method="POST">
                     @csrf
                     <input type="hidden" name="product_ids" id="bulk-best-selling-input">
+                    <input type="hidden" name="fields" value="best_selling">
                     <button type="button"
                         class="bulk-action-btn bg-green-500 text-white px-3 py-2 rounded hover:bg-green-600 text-xs"
                         data-target="bulk-best-selling-input">
                         Đánh dấu bán chạy
+                    </button>
+                </form>
+
+                <form id="bulk-status-form" action="{{ route('products.toggleOn') }}" method="POST">
+                    @csrf
+                    <input type="hidden" name="product_ids" id="bulk-status-input">
+                    <input type="hidden" name="fields" value="status">
+                    <button type="button"
+                        class="bulk-action-btn bg-green-500 text-white px-3 py-2 rounded hover:bg-green-600 text-xs"
+                        data-target="bulk-status-input">
+                        Hiển thị
+                    </button>
+                </form>
+
+                <form id="bulk-status-off-form" action="{{ route('products.toggleOff') }}" method="POST">
+                    @csrf
+                    <input type="hidden" name="product_ids" id="bulk-status-off-input">
+                    <input type="hidden" name="fields" value="status">
+                    <button type="button"
+                        class="bulk-action-btn bg-red-500 text-white px-3 py-2 rounded hover:bg-red-600 text-xs"
+                        data-target="bulk-status-off-input">
+                        Tạm ẩn
                     </button>
                 </form>
             </div>
@@ -97,7 +121,7 @@
                     class="bg-gray-400 text-white px-3 py-2 rounded hover:bg-gray-500 text-xs">Xóa lọc</a>
                 @can('product-create')
                     <a href="{{ route('products.create') }}"
-                        class="bg-blue-500 text-white px-3 py-2 rounded hover:bg-blue-600 text-xs">Thêm sản phẩm</a>
+                        class="bg-blue-500 text-white px-3 py-2 rounded hover:bg-blue-600 text-xs">Thêm mới</a>
                 @endcan
             </form>
 
@@ -117,7 +141,7 @@
                     <th class="p-2">Đã bán</th>
                     <th class="p-2 text-center">Bán chạy</th>
                     <th class="p-2 text-center">Nổi bật</th>
-                    <th class="p-2 ">Trạng thái</th>
+                    <th class="p-2">Trạng thái</th>
                     <th class="p-2">Hành động</th>
                 </tr>
             </thead>
@@ -215,7 +239,7 @@
                                     </svg>
                                 </a>
                             @endcan
-                            @can('product-delete')
+                            {{-- @can('product-delete')
                                 <form action="{{ route('products.destroy', $product->id) }}" method="POST"
                                     onsubmit="return confirm('Bạn có chắc chắn muốn xóa?');">
                                     @csrf
@@ -228,7 +252,7 @@
                                         </svg>
                                     </button>
                                 </form>
-                            @endcan
+                            @endcan --}}
                         </td>
                     </tr>
                 @endforeach

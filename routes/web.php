@@ -26,9 +26,11 @@ Route::middleware('auth')->group(function () {
     Route::patch('/products/{id}/toggle-status', [ProductController::class, 'toggleStatus'])->name('products.toggleStatus');
     Route::patch('/products/{id}/toggle-featured', [ProductController::class, 'toggleFeatured'])->name('products.toggleFeatured');
     Route::patch('/products/{id}/toggle-best-selling', [ProductController::class, 'toggleBestSelling'])->name('products.toggleBestSelling');
-    Route::post('/products/toggle-all', [ProductController::class, 'toggleAll'])->name('products.toggleAll');
-    Route::post('/products/bulk-feature', [ProductController::class, 'bulkFeature'])->name('products.bulkFeature');
-    Route::post('/products/bulk-best-selling', [ProductController::class, 'bulkBestSelling'])->name('products.bulkBestSelling');
+    Route::post('/products/toggle-on', [ProductController::class, 'toggleOn'])->name('products.toggleOn');
+    Route::post('/products/toggle-off', [ProductController::class, 'toggleOff'])->name('products.toggleOff');
+    // Route::post('/products/bulk-feature', [ProductController::class, 'bulkFeature'])->name('products.bulkFeature');
+    // Route::post('/products/bulk-best-selling', [ProductController::class, 'bulkBestSelling'])->name('products.bulkBestSelling');
+    // Route::post('/products/bulk-status', [ProductController::class, 'bulkStatus'])->name('products.bulkStatus');
 
 
     Route::resource('productImages', ProductImageController::class);

@@ -33,148 +33,146 @@
                 class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 text-xs">Về trước</a>
         </div>
         <hr class="h-px my-2 bg-gray-200 border-0 dark:bg-gray-700">
-        <div class="w-full">
-            <span>Sản phẩm: <h4 class="text-2xl font-bold dark:text-white">{{ $product->product_name }}</h4></span>
-            <div class="grid grid-cols-2 gap-4 w-full p-4 border border-gray-300 rounded-lg dark:border-gray-700 mt-3">
-                <!-- Cột thông tin -->
-                <div>
-                    <p class="text-sm font-bold dark:text-white">Danh mục:</p>
-                    <p class="text-gray-600 dark:text-gray-300">{{ $product->category->category_name }}</p>
+        @if ($notification)
+            <div class="space-y-3">
+                @if ($notification['quantity_in_tock'])
+                    <div class="flex items-center justify-between bg-red-50 p-3 rounded-lg shadow-md">
+                        <div class="flex items-center space-x-3">
+                            <svg class="w-6 h-6 text-yellow-500 dark:text-white" aria-hidden="true"
+                                xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor"
+                                viewBox="0 0 24 24">
+                                <path fill-rule="evenodd"
+                                    d="M2 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10S2 17.523 2 12Zm11-4a1 1 0 1 0-2 0v5a1 1 0 1 0 2 0V8Zm-1 7a1 1 0 1 0 0 2h.01a1 1 0 1 0 0-2H12Z"
+                                    clip-rule="evenodd" />
+                            </svg>
 
-                    <p class="text-sm font-bold mt-2 dark:text-white">Giá gốc:</p>
-                    <p class="text-gray-600 dark:text-gray-300">{{ number_format($product->price, 0, ',', '.') }} đ</p>
-
-                    <p class="text-sm font-bold mt-2 dark:text-white">Giá giảm:</p>
-                    <p class="text-red-500 font-semibold">
-                        {{ $product->promotion_price ? number_format($product->promotion_price, 0, ',', '.') . ' đ' : 'Không có' }}
-                    </p>
-
-                    <p class="text-sm font-bold mt-2 dark:text-white">Số lượng tồn kho:</p>
-                    <p class="text-gray-600 dark:text-gray-300">{{ $product->quantity_in_stock }}</p>
-
-                    <p class="text-sm font-bold mt-2 dark:text-white">Số lượng đã bán:</p>
-                    <p class="text-gray-600 dark:text-gray-300">{{ $product->quantity_sold }}</p>
-                </div>
-
-                <!-- Cột mô tả -->
-                <div>
-                    <p class="text-sm font-bold dark:text-white">Mô tả ngắn:</p>
-                    <div class="text-gray-600 dark:text-gray-300 border-l-4 border-blue-500 pl-3 mt-1">
-                        {{ $product->description }}
-                    </div>
-                </div>
-            </div>
-            <div class="w-full p-4 border border-gray-300 rounded-lg dark:border-gray-700 mt-5">
-                <!-- Tabs -->
-                <div class="flex border-b">
-                    <button onclick="showTab('images')" id="tab-images"
-                        class="px-4 py-2 text-sm font-semibold border-b-2 border-transparent text-gray-600 dark:text-gray-300 hover:border-blue-500 focus:border-blue-500">
-                        Hình ảnh
-                    </button>
-                    <button onclick="showTab('attributes')" id="tab-attributes"
-                        class="px-4 py-2 text-sm font-semibold border-b-2 border-transparent text-gray-600 dark:text-gray-300 hover:border-blue-500 focus:border-blue-500">
-                        Thuộc tính
-                    </button>
-
-                </div>
-                <!-- Nội dung tab hình ảnh (ẩn mặc định) -->
-                <div id="content-images" class="p-4">
-                    <p class="text-lg font-bold dark:text-white">Quản lý Hình Ảnh Sản Phẩm</p>
-
-                    @if (count($product->images) < 5)
-                        <!-- Form thêm ảnh -->
-                        <form action="{{ route('productImages.store') }}" class="mb-4" method="POST"
-                            enctype="multipart/form-data">
+                            <span class="font-semibold">{{ $notification['quantity_in_tock'] }}</span>
+                        </div>
+                        <form action="{{ route('products.edit', $product->id) }}" method="GET">
                             @csrf
-                            <input type="hidden" name="product_id" value="{{ $product->id }}">
-                            <input type="file" name="images[]" id="imageInput" accept="image/*" multiple required>
-                            <button type="submit"
-                                class="px-3 py-1 bg-green-500 text-white rounded hover:bg-green-600">Upload</button>
+                            <button
+                                class="bg-yellow-500 hover:bg-yellow-600 text-white font-medium px-3 py-2 rounded transition duration-300">
+                                Giải quyết
+                            </button>
                         </form>
-                    @endif
+                    </div>
+                @endif
 
+            </div>
+        @endif
+        <div class="mt-5">
+            <div class="flex border-b border-gray-200">
+                <button id="tab-details" onclick="showTab('details')"
+                    class="px-4 py-2 text-sm font-medium text-gray-700 border-b-2 border-blue-500 focus:outline-none">Chi
+                    tiết sản phẩm</button>
+                <button id="tab-images" onclick="showTab('images')"
+                    class="px-4 py-2 text-sm font-medium text-gray-700 hover:border-b-2 hover:border-blue-500 focus:outline-none">Hình
+                    ảnh & Mô tả</button>
+                <button id="tab-reviews" onclick="showTab('reviews')"
+                    class="px-4 py-2 text-sm font-medium text-gray-700 hover:border-b-2 hover:border-blue-500 focus:outline-none">Đánh
+                    giá</button>
+            </div>
 
+            <!-- Chi tiết sản phẩm -->
+            <div id="content-details" class="p-4">
+                <h2 class="text-lg font-semibold mb-3">Thông tin sản phẩm</h2>
+                <div class="grid grid-cols-2 gap-4">
+                    <p>📦 Tên sản phẩm: {{ $product->product_name }}</p>
+                    <p>🔗 Slug: {{ $product->slug }}</p>
+                    <p>📊 Số sao: {{ number_format($avgRating, 0) }}⭐</p>
+                    <p>💰 Giá gốc: {{ number_format($product->price, 0) }} VND</p>
+                    <p>📦 Số lượng trong kho: {{ $product->quantity_in_stock }}</p>
+                    <p>🎉 Giá khuyến mãi: {{ number_format($product->promotion_price, 0) }} VND</p>
+                    <p>🛒 Đã bán: {{ $product->quantity_sold }}</p>
+                    <p>🚀 Sản phẩm bán chạy: {{ $product->best_selling ? 'Kích hoạt' : 'Không kích hoạt' }}
+                    </p>
+                    <p>🌟 Sản phẩm nổi bật: {{ $product->featured ? 'Kích hoạt' : 'Không kích hoạt' }}</p>
+                    <p>🔄 Trạng thái:
+                        @if ($product->status == 1)
+                            Đang hiển thị
+                        @else
+                            Đang ẩn
+                        @endif
+                    </p>
+                    <p>📅 Ngày tạo: {{ $product->created_at->format('d/m/Y') }}</p>
+                </div>
 
-                    <!-- Bảng hình ảnh -->
-                    <table class="w-full border border-gray-300 dark:border-gray-700">
+                <h2 class="text-lg font-semibold mt-6">Các thuộc tính sản phẩm:</h2>
+                <div class="overflow-x-auto mt-2">
+                    <table class="w-full border-collapse border border-gray-300">
                         <thead>
-                            <tr class="bg-gray-100 dark:bg-gray-800">
-                                <th class="p-2 border dark:border-gray-600">Hình</th>
-                                <th class="p-2 border dark:border-gray-600">Ảnh chính</th>
-                                <th class="p-2 border dark:border-gray-600">Hành động</th>
+                            <tr class="bg-gray-100">
+                                <th class="border border-gray-300 px-4 py-2 text-left">⚙️ Thuộc tính</th>
+                                <th class="border border-gray-300 px-4 py-2 text-left">🔢 Giá trị</th>
                             </tr>
                         </thead>
-                        <tbody id="imageTableBody">
-                            @foreach ($product->images as $image)
-                                <tr class="text-center" id="imageRow-{{ $image->id }}">
-                                    <!-- Ảnh sản phẩm -->
-                                    <td class="p-2 border dark:border-gray-600">
-                                        <img src="{{ asset('storage/' . $image->image_url) }}"
-                                            alt="{{ $image->alt_text }}" class="w-24 h-24 object-cover rounded-md border">
-                                    </td>
-
-                                    <!-- Checkbox chọn ảnh chính -->
-                                    <td class="p-2 border dark:border-gray-600">
-                                        <form action="{{ route('productImages.isPrimary', $image->id) }}" method="post">
-                                            @csrf
-                                            @method('PATCH')
-                                            <input type="radio" name="is_primary" value="{{ $image->id }}"
-                                                class="w-5 h-5 cursor-pointer" onchange="this.form.submit()"
-                                                {{ $image->is_primary ? 'checked' : '' }}>
-                                        </form>
-
-                                    </td>
-
-                                    <!-- Nút Xóa -->
-                                    <td class="p-2 border dark:border-gray-600">
-                                        <button class="px-3 py-1 bg-red-500 text-white rounded hover:bg-red-600">
-                                            Xóa
-                                        </button>
-                                    </td>
+                        <tbody>
+                            @foreach ($product->attributes as $attribute)
+                                <tr>
+                                    <td class="border border-gray-300 px-4 py-2">{{ $attribute->attribute_name }}</td>
+                                    <td class="border border-gray-300 px-4 py-2">{{ $attribute->attribute_value }}</td>
                                 </tr>
                             @endforeach
                         </tbody>
                     </table>
                 </div>
+            </div>
 
-                <!-- Nội dung tab thuộc tính -->
-                <div id="content-attributes" class="p-4">
-                    <p class="text-sm font-bold dark:text-white">Danh sách thuộc tính:</p>
-                    <ul class="list-disc pl-5 text-gray-600 dark:text-gray-300">
-                        @foreach ($product->attributes as $attribute)
-                            <li><strong>{{ $attribute->attribute_name }}</strong>: {{ $attribute->attribute_value }}</li>
-                        @endforeach
-                    </ul>
+            <!-- Hình ảnh sản phẩm & Mô tả -->
+            <div id="content-images" class="p-4 hidden">
+                <h2 class="text-lg font-semibold mb-3">🖼️ Hình ảnh sản phẩm</h2>
+                <div class="grid grid-cols-5 gap-4">
+                    @foreach ($images->sortByDesc('is_primary') as $image)
+                        <div class="relative">
+                            <img src="{{ asset('storage/' . $image->image_url) }}" alt="{{ $image->alt_text }}"
+                                class="w-full h-32 md:h-40 object-cover rounded-lg shadow-md
+                                       {{ $image->is_primary ? 'border-2 border-blue-500 brightness-110' : 'hover:brightness-110 transition duration-200' }}">
+                            @if ($image->is_primary)
+                                <span class="absolute top-2 left-2 bg-blue-500 text-white text-xs px-2 py-1 rounded">
+                                    Ảnh chính
+                                </span>
+                            @endif
+                        </div>
+                    @endforeach
                 </div>
 
+                <div class="mt-4">
+                    <h2 class="text-lg font-semibold mb-3">📝 Mô tả sản phẩm</h2>
+                    <p>{{ $product->description }}</p>
+                </div>
+            </div>
 
+            <!-- Đánh giá của khách hàng -->
+            <div id="content-reviews" class="p-4 hidden">
+                <h2 class="text-lg font-semibold mb-3">Đánh giá của khách hàng</h2>
+                @if ($productReviews)
+                    @foreach ($productReviews as $productReview)
+                        <div class="mb-4 p-4 border rounded-lg shadow-sm">
+                            <p class="font-semibold">👤 {{ $productReview->user->name }} - {{ $productReview->rating }}/5
+                                ⭐
+                            </p>
+                            <p class="text-gray-600">💬 {{ $productReview->comment }}</p>
+                        </div>
+                    @endforeach
+                @else
+                    <p class="text-gray-600">Chưa có đánh giá nào. Hãy là người đầu tiên đánh giá sản phẩm này!</p>
+                @endif
             </div>
         </div>
-
     </div>
 @endsection
 @push('scripts')
     <script>
         function showTab(tabName) {
-            // Ẩn tất cả nội dung
-            document.getElementById("content-attributes").classList.add("hidden");
-            document.getElementById("content-images").classList.add("hidden");
+            let tabs = ["details", "images", "reviews"];
+            tabs.forEach(tab => {
+                document.getElementById(`content-${tab}`).classList.add("hidden");
+                document.getElementById(`tab-${tab}`).classList.remove("border-b-2", "border-blue-500");
+            });
 
-            // Xóa active của tất cả tab
-            document.getElementById("tab-attributes").classList.remove("border-blue-500", "text-blue-500");
-            document.getElementById("tab-images").classList.remove("border-blue-500", "text-blue-500");
-
-            // Hiển thị nội dung của tab được chọn
             document.getElementById(`content-${tabName}`).classList.remove("hidden");
-
-            // Thêm class active cho tab được chọn
-            document.getElementById(`tab-${tabName}`).classList.add("border-blue-500", "text-blue-500");
+            document.getElementById(`tab-${tabName}`).classList.add("border-b-2", "border-blue-500");
         }
-
-        // Mặc định hiển thị tab "Thuộc tính"
-        document.addEventListener("DOMContentLoaded", function() {
-            showTab('images');
-        });
     </script>
 
     <script>
@@ -195,4 +193,4 @@
             toastr.error("{{ session('error') }}");
         @endif
     </script>
-@endpush
+@endpush)

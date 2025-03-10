@@ -33,284 +33,284 @@
                 class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 text-xs">Về trước</a>
         </div>
         <hr class="h-px my-2 bg-gray-200 border-0 dark:bg-gray-700">
-        <form class="max-w-4xl mx-auto grid grid-cols-2 gap-5" action="{{ route('products.store') }}" method="POST"
-            enctype="multipart/form-data">
-            @csrf
+        <div class="mx-auto bg-white p-6">
+            <h2 class="text-2xl font-bold mb-4">Thêm Sản Phẩm</h2>
+            <ul class="flex border-b">
+                <li class="mr-4 flex items-center gap-2 hover:text-gray-500 text-gray-400">
+                    <a href="#" class="tab-link active py-2 block" data-tab="0">Thông tin chung</a>
+                </li>
+                <li class="mr-4 flex items-center gap-2 hover:text-gray-500 text-gray-400">
+                    <svg class="w-4 h-4 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
+                        width="24" height="24" fill="none" viewBox="0 0 24 24">
+                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="m9 5 7 7-7 7" />
+                    </svg>
+                    <a href="#" class="tab-link px-4 py-2 block" data-tab="1">Thuộc tính sản phẩm</a>
+                </li>
+                <li class="mr-4 flex items-center gap-2 hover:text-gray-500 text-gray-400">
+                    <svg class="w-4 h-4 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
+                        width="24" height="24" fill="none" viewBox="0 0 24 24">
+                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="m9 5 7 7-7 7" />
+                    </svg>
+                    <a href="#" class="tab-link px-4 py-2 block" data-tab="2">Hình ảnh & Mô tả</a>
+                </li>
+                <li class="flex items-center gap-2 hover:text-gray-500 text-gray-400">
+                    <svg class="w-4 h-4 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
+                        width="24" height="24" fill="none" viewBox="0 0 24 24">
+                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="m9 5 7 7-7 7" />
+                    </svg>
+                    <a href="#" class="tab-link px-4 py-2 block" data-tab="3">Trạng thái & Xác nhận</a>
+                </li>
+            </ul>
 
-            <div class="col-span-2 mt-2">
-                <label for="product_name" class="block text-sm font-medium text-gray-700">
-                    Tên sản phẩm (tối đa 100 ký tự)
-                </label>
-                <input type="text" name="product_name" id="product_name" maxlength="100"
-                    class="mt-1 block w-full bg-gray-100 rounded-md border-gray-400 p-2 shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-                    placeholder="Nhập tên sản phẩm..." oninput="updateCharCount()">
-                <p id="char-count" class="text-xs text-gray-500 mt-1">0/100 ký tự</p>
-                @error('product_name')
-                    <p class="text-red-500 text-sm">{{ $message }}</p>
-                @enderror
-            </div>
+            <form action="{{ route('products.store') }}" method="post" enctype="multipart/form-data" class="mt-4">
+                @csrf
+                <!-- Tab 1: Thông tin chung -->
+                <div class="tab-content block" id="tab-0">
+                    <div class="mb-3">
+                        <label for="product_name" class="block font-semibold">Tên sản phẩm</label>
+                        <input type="text" id="product_name" value="{{ old('product_name') }}" name="product_name"
+                            required class="w-full p-2 border rounded">
+                        <p class="text-xs">Tối đa 100 kí tự</p>
+                        @error('product_name')
+                            <p class="text-red-500 text-sm">{{ $message }}</p>
+                        @enderror
+                    </div>
+                    <div class="mb-3 flex justify-between gap-2">
+                        <div class="mb-3 w-1/2">
+                            <label for="price" class="block font-semibold">Giá</label>
+                            <input type="number" id="price" name="price" value="{{ old('price') }}" required
+                                class="w-full p-2 border rounded">
+                            @error('price')
+                                <p class="text-red-500 text-sm">{{ $message }}</p>
+                            @enderror
+                        </div>
+                        <div class="mb-3 w-1/2">
+                            <label for="promotion_price" class="block font-semibold">Giá giảm</label>
+                            <input type="number" id="promotion_price" name="promotion_price"
+                                value="{{ old('promotion_price') }}" class="w-full p-2 border rounded">
+                            @error('promotion_price')
+                                <p class="text-red-500 text-sm">{{ $message }}</p>
+                            @enderror
+                        </div>
+                    </div>
+                    <div class="w-1/2 mb-3">
+                        <label for="quantity_in_stock" class="block font-semibold">Số lượng</label>
+                        <input type="number" id="quantity_in_stock" name="quantity_in_stock"
+                            value="{{ old('quantity_in_stock') }}" required class="w-full p-2 border rounded">
+                        @error('quantity_in_stock')
+                            <p class="text-red-500 text-sm">{{ $message }}</p>
+                        @enderror
+                    </div>
+                    <div class="mb-3 w-1/2 flex gap-2 justify-between items-center mt-4">
+                        <div class="w-1/2">
+                            <label class="block text-sm font-medium text-gray-900 dark:text-gray-300">Sản phẩm bán
+                                chạy</label>
+                            <div class="flex gap-4 mt-1">
+                                <label class="flex items-center">
+                                    <input type="radio" name="best_selling" value="1"
+                                        {{ old('best_selling') == '1' ? 'checked' : '' }}
+                                        class="w-4 h-4 text-blue-600 border-gray-300 focus:ring-blue-500">
+                                    <span class="ml-2 text-sm">Kích hoạt</span>
+                                </label>
+                                <label class="flex items-center">
+                                    <input type="radio" name="best_selling" value="0"
+                                        {{ old('best_selling') == '0' ? 'checked' : '' }}
+                                        class="w-4 h-4 text-red-600 border-gray-300 focus:ring-red-500">
+                                    <span class="ml-2 text-sm">Không</span>
+                                </label>
+                            </div>
+                            @error('best_selling')
+                                <p class="text-red-500 text-sm">{{ $message }}</p>
+                            @enderror
+                        </div>
 
-
-            <div>
-                <label for="price" class="block text-sm font-medium text-gray-700">Giá gốc</label>
-                <input type="number" name="price" id="price" min="1"
-                    class="mt-1 block w-full bg-gray-100 rounded-md border-gray-400 p-2 shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-                    placeholder="Nhập giá gốc sản phẩm..." oninput="formatPrice(this)">
-                <p id="formatted-price" class="text-xs text-gray-500 mt-1"></p>
-                @error('price')
-                    <p class="text-red-500 text-sm">{{ $message }}</p>
-                @enderror
-            </div>
-
-            <div>
-                <label for="promotion_price" class="block text-sm font-medium text-gray-700">Giá đã giảm</label>
-                <input type="number" name="promotion_price" id="promotion_price" min="1"
-                    class="mt-1 block w-full bg-gray-100 rounded-md border-gray-400 p-2 shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-                    placeholder="Nhập giá giảm sản phẩm..." oninput="formatPromotionPrice(this)">
-                <p id="formatted-promotion_price" class="text-xs text-gray-500 mt-1"></p>
-                @error('promotion_price')
-                    <p class="text-red-500 text-sm">{{ $message }}</p>
-                @enderror
-            </div>
-
-
-            <div>
-                <label for="quantity_in_stock" class="block text-sm font-medium text-gray-700">Số lượng nhập vào</label>
-                <input type="number" name="quantity_in_stock" id="quantity_in_stock" min="1"
-                    class="mt-1 block w-full bg-gray-100 rounded-md border-gray-400 p-2 shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-                    placeholder="Nhập số sản phẩm nhập vào...">
-                @error('quantity_in_stock')
-                    <p class="text-red-500 text-sm">{{ $message }}</p>
-                @enderror
-            </div>
-
-
-            <div>
-                <label for="category" class="block text-sm font-medium text-gray-700">Danh mục</label>
-                <select name="category" id="category"
-                    class="mt-1 block w-full bg-gray-100 rounded-md border-2 border-gray-400 p-2 shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
-                    <option value="" disabled selected>Chọn danh mục</option>
-                    @foreach ($categories as $category)
-                        <option value="{{ $category->id }}">{{ $category->category_name }}</option>
-                    @endforeach
-                </select>
-                @error('category')
-                    <p class="text-red-500 text-sm">{{ $message }}</p>
-                @enderror
-            </div>
-
-
-            <div>
-                <label for="attribute_name" class="block text-sm font-medium text-gray-700">Thuộc tính sản phẩm</label>
-
-                <!-- Dòng đầu tiên có sẵn -->
-                <div class="flex gap-3 items-center mt-2">
-                    <input type="text" name="attribute_name[]"
-                        class="block w-full bg-gray-100 rounded-md border-gray-400 p-2 shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-                        placeholder="Nhập tên thuộc tính">
-                    <input type="text" name="attribute_value[]"
-                        class="block w-full bg-gray-100 rounded-md border-gray-400 p-2 shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-                        placeholder="Nhập giá trị">
-                    <button type="button" class="text-red-500 hover:text-red-700 text-sm font-semibold"
-                        onclick="this.parentElement.remove()">Xóa</button>
+                        <div class="w-1/2">
+                            <label class="block text-sm font-medium text-gray-900 dark:text-gray-300">Sản phẩm nổi
+                                bật</label>
+                            <div class="flex gap-4 mt-1">
+                                <label class="flex items-center">
+                                    <input type="radio" name="featured" value="1"
+                                        {{ old('featured') == '1' ? 'checked' : '' }}
+                                        class="w-4 h-4 text-blue-600 border-gray-300 focus:ring-blue-500">
+                                    <span class="ml-2 text-sm">Kích hoạt</span>
+                                </label>
+                                <label class="flex items-center">
+                                    <input type="radio" name="featured" value="0"
+                                        {{ old('featured') == '0' ? 'checked' : '' }}
+                                        class="w-4 h-4 text-red-600 border-gray-300 focus:ring-red-500">
+                                    <span class="ml-2 text-sm">Không</span>
+                                </label>
+                            </div>
+                            @error('featured')
+                                <p class="text-red-500 text-sm">{{ $message }}</p>
+                            @enderror
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="category" class="block font-semibold">Danh mục</label>
+                        <select id="category" name="category" class="w-full p-2 border rounded">
+                            <option disabled selected>Chọn danh mục</option>
+                            @foreach ($categories as $category)
+                                <option value="{{ $category->id }}"
+                                    {{ old('category') == $category->id ? 'selected' : '' }}>
+                                    {{ $category->category_name }}</option>
+                            @endforeach
+                        </select>
+                        @error('category')
+                            <p class="text-red-500 text-sm">{{ $message }}</p>
+                        @enderror
+                    </div>
                 </div>
 
-                <!-- Hiển thị danh sách thuộc tính đã thêm -->
-                <div id="attribute-list" class="mt-3 space-y-2"></div>
+                <!-- Tab 2: Thuộc tính sản phẩm -->
+                <div class="tab-content hidden" id="tab-1">
+                    <div id="attribute-container">
+                        <!-- Mẫu thuộc tính -->
+                        <div class="flex gap-2 mb-2 attribute-item">
+                            <input type="text" name="attribute_names[]" placeholder="VD: Kích thước"
+                                class="w-1/3 p-2 border rounded">
+                            <input type="text" name="attribute_values[]" placeholder="VD: 3cm"
+                                class="w-1/3 p-2 border rounded">
+                            <button type="button" class="text-red-500 px-3 py-1  remove-attribute hidden">x</button>
+                        </div>
+                        @error('atribute_names')
+                            <p class="text-red-500 text-sm">{{ $message }}</p>
+                        @enderror
+                    </div>
 
-                <!-- Nút thêm thuộc tính -->
-                <button type="button" onclick="addAttribute()"
-                    class="mt-2 bg-green-600 text-white px-3 py-2 rounded-md text-sm hover:bg-green-700 transition">
-                    + Thêm thuộc tính
-                </button>
-                @error('attribute_name')
-                    <p class="text-red-500 text-sm">{{ $message }}</p>
-                @enderror
-            </div>
-
-
-            <div class="col-span-2">
-                <label for="images" class="block text-sm font-medium text-gray-700">Ảnh sản phẩm</label>
-                <input type="file" id="images" name="images[]" multiple
-                    class="mt-1 block w-full p-1 text-sm border border-gray-300 cursor-pointer rounded-lg bg-gray-50 focus:outline-none"
-                    onchange="handleFiles(event)">
-                <div id="file-list" class="mt-2 text-sm text-gray-700"></div>
-                <p id="file-warning" class="text-red-500 text-sm mt-2 hidden">Bạn chỉ được chọn tối đa 5 hình!</p>
-                @error('images')
-                    <p class="text-red-500 text-sm">{{ $message }}</p>
-                @enderror
-            </div>
-
-
-            <!-- Mô tả -->
-            <div class="col-span-2">
-                <label for="description" class="block text-sm font-medium text-gray-700">Mô tả</label>
-                <textarea name="description" id="description" rows="4"
-                    class="mt-1 p-3 block w-full bg-gray-100 rounded-lg border-2 border-gray-300 bg-blue-20 focus:ring-blue-600 focus:border-blue-300 sm:text-sm"></textarea>
-                @error('desciption')
-                    <p class="text-red-500 text-sm">{{ $message }}</p>
-                @enderror
-            </div>
-
-
-            <div>
-                <label class="block text-sm font-medium text-gray-700">Trạng thái</label>
-                <div class="flex gap-4 mt-2">
-                    <label class="flex items-center">
-                        <input type="radio" name="status" value="1" checked class="hidden peer">
-                        <span
-                            class="peer-checked:bg-blue-600 peer-checked:text-white px-4 py-2 rounded-md border border-gray-400 cursor-pointer">
-                            ✅ Hiển thị
-                        </span>
-                    </label>
-                    <label class="flex items-center">
-                        <input type="radio" name="status" value="0" class="hidden peer">
-                        <span
-                            class="peer-checked:bg-red-600 peer-checked:text-white px-4 py-2 rounded-md border border-gray-400 cursor-pointer">
-                            🚫 Ẩn
-                        </span>
-                    </label>
+                    <button type="button" id="add-attribute" class="bg-blue-500 text-white px-4 py-2 rounded">Thêm
+                        thuộc tính</button>
                 </div>
-                @error('status')
-                    <p class="text-red-500 text-sm">{{ $message }}</p>
-                @enderror
-            </div>
 
 
-            <!-- Nút xác nhận -->
-            <div class="col-span-2 flex justify-start">
-                <button type="submit"
-                    class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg px-5 py-2.5 text-center">Thêm
-                    sản phẩm</button>
-            </div>
-        </form>
+                <!-- Tab 3: Hình ảnh & Mô tả -->
+                <div class="tab-content hidden" id="tab-2">
+                    <div class="mb-3">
+                        <label for="images" class="block font-semibold">Hình ảnh sản phẩm</label>
+                        <input type="file" multiple id="images" name="images[]" accept="image/*"
+                            class="w-full p-2 border rounded focus:ring-blue-500" onchange="previewImages(event)">
+                        @error('images')
+                            <p class="text-red-500 text-sm">{{ $message }}</p>
+                        @enderror
+                        <!-- Preview Hình Ảnh -->
+                        <div id="image-preview" class="grid grid-cols-3 gap-2 mt-2"></div>
+                    </div>
+                    <hr class="h-px my-2 bg-gray-200 border-0 dark:bg-gray-700">
+                    <div class="mb-3">
+                        <label for="description" class="block font-semibold">Mô tả sản phẩm</label>
+                        <textarea id="description" name="description" rows="15" class="w-full p-2 border rounded">{{ old('description') }}</textarea>
+                        @error('description')
+                            <p class="text-red-500 text-sm">{{ $message }}</p>
+                        @enderror
+                    </div>
+                </div>
+
+                <!-- Tab 4: Trạng thái & Xác nhận -->
+                <div class="tab-content hidden" id="tab-3">
+                    <div class="mb-3">
+                        <label for="status" class="block font-semibold">Trạng thái hiển thị</label>
+                        <select id="status" name="status" class="w-full p-2 border rounded">
+                            <option value="1" {{ old('status') == 1 ? 'selected' : '' }}>Hiển thị</option>
+                            <option value="0" {{ old('status') == 0 ? 'selected' : '' }}>Ẩn</option>
+                        </select>
+                        @error('status')
+                            <p class="text-red-500 text-sm">{{ $message }}</p>
+                        @enderror
+                    </div>
+                    <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded">Thêm sản phẩm</button>
+                </div>
+            </form>
+        </div>
     </div>
 @endsection
 @push('scripts')
     <script>
-        let selectedFiles = [];
-        const maxFiles = 5;
+        document.addEventListener("DOMContentLoaded", function() {
+            let tabs = document.querySelectorAll(".tab-link");
+            let contents = document.querySelectorAll(".tab-content");
 
-        function handleFiles(event) {
-            const input = event.target;
-            const newFiles = Array.from(input.files);
+            tabs.forEach(tab => {
+                tab.addEventListener("click", function(event) {
+                    event.preventDefault();
+                    let tabIndex = this.getAttribute("data-tab");
 
-            if (selectedFiles.length + newFiles.length > maxFiles) {
-                document.getElementById('file-warning').classList.remove('hidden');
-                return;
-            } else {
-                document.getElementById('file-warning').classList.add('hidden');
-            }
+                    // Xóa trạng thái active của tất cả các tab
+                    tabs.forEach(t => t.classList.remove("active", "text-black"));
+                    contents.forEach(c => c.classList.add("hidden"));
 
-            // Thêm file mới vào danh sách
-            selectedFiles = selectedFiles.concat(newFiles);
-
-            // Tạo DataTransfer để cập nhật input.files
-            const dataTransfer = new DataTransfer();
-            selectedFiles.forEach(file => dataTransfer.items.add(file));
-            input.files = dataTransfer.files; // Cập nhật input.files để gửi tất cả file
-
-            updateFileList();
-        }
-
-        function updateFileList() {
-            const fileList = document.getElementById('file-list');
-            fileList.innerHTML = '';
-
-            if (selectedFiles.length > 0) {
-                const ul = document.createElement('ul');
-                ul.classList.add('list-disc', 'pl-5');
-
-                selectedFiles.forEach((file, index) => {
-                    const li = document.createElement('li');
-                    li.classList.add('flex', 'justify-between', 'items-center', 'mb-1');
-
-                    li.innerHTML = `
-                    <span>${file.name}</span>
-                    <button onclick="removeFile(${index})" class="ml-3 text-red-500 text-xs hover:underline">
-                        Xóa
-                    </button>
-                `;
-
-                    ul.appendChild(li);
+                    // Kích hoạt tab được chọn
+                    this.classList.add("active", "text-black");
+                    document.getElementById("tab-" + tabIndex).classList.remove("hidden");
                 });
+            });
 
-                fileList.appendChild(ul);
+            // Mặc định chọn tab đầu tiên
+            tabs[0].click();
+        });
+    </script>
+
+    <script>
+        document.getElementById("add-attribute").addEventListener("click", function() {
+            let container = document.getElementById("attribute-container");
+            let index = container.getElementsByClassName("attribute-item").length;
+
+            let newAttribute = document.createElement("div");
+            newAttribute.classList.add("flex", "gap-2", "mb-2", "attribute-item");
+            newAttribute.innerHTML = `
+            <input type="text" name="attribute_names[]" placeholder="Tên thuộc tính"
+                class="w-1/3 p-2 border rounded" required>
+            <input type="text" name="attribute_values[]" placeholder="Giá trị"
+                class="w-1/3 p-2 border rounded" required>
+            <button type="button" class="text-red-500 px-3 py-1 remove-attribute">x</button>
+        `;
+
+            container.appendChild(newAttribute);
+            updateRemoveButtons();
+        });
+
+        // Xóa thuộc tính
+        document.addEventListener("click", function(event) {
+            if (event.target.classList.contains("remove-attribute")) {
+                event.target.parentElement.remove();
+                updateRemoveButtons();
+            }
+        });
+
+        // Hiển thị/xóa nút 🗑️
+        function updateRemoveButtons() {
+            let buttons = document.getElementsByClassName("remove-attribute");
+            for (let btn of buttons) {
+                btn.style.display = buttons.length > 1 ? "inline-block" : "none";
             }
         }
-
-        function removeFile(index) {
-            selectedFiles.splice(index, 1);
-
-            // Tạo lại DataTransfer để cập nhật input.files
-            const dataTransfer = new DataTransfer();
-            selectedFiles.forEach(file => dataTransfer.items.add(file));
-            document.getElementById("images").files = dataTransfer.files;
-
-            updateFileList();
-        }
-    </script>
-
-
-    <script>
-        function updateCharCount() {
-            let input = document.getElementById('product_name');
-            let count = document.getElementById('char-count');
-            count.textContent = `${input.value.length}/100 ký tự`;
-        }
-    </script>
-    <script>
-        function formatPrice(input) {
-            let value = input.value.replace(/\D/g, '');
-            input.value = value;
-            document.getElementById('formatted-price').textContent =
-                value ? `Giá: ${parseInt(value).toLocaleString('vi-VN')} VND` : '';
-        }
-
-        function formatPromotionPrice(input) {
-            let value = input.value.replace(/\D/g, '');
-            input.value = value;
-            document.getElementById('formatted-promotion_price').textContent =
-                value ? `Giá: ${parseInt(value).toLocaleString('vi-VN')} VND` : '';
-        }
+        updateRemoveButtons();
     </script>
 
     <script>
-        function addAttribute() {
-            let container = document.getElementById("attribute-list");
+        function previewImages(event) {
+            const previewContainer = document.getElementById('image-preview');
+            previewContainer.innerHTML = ""; // Xóa hình cũ khi chọn lại
 
-            let div = document.createElement("div");
-            div.classList.add("flex", "gap-3", "items-center");
+            Array.from(event.target.files).forEach((file, index) => {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const imgContainer = document.createElement('div');
+                    imgContainer.classList.add("relative", "border", "p-1", "rounded-lg");
 
-            let inputName = document.createElement("input");
-            inputName.type = "text";
-            inputName.name = "attribute_name[]";
-            inputName.placeholder = "Tên thuộc tính";
-            inputName.required = true;
-            inputName.classList.add("block", "w-full", "rounded-md", "border-gray-400", "p-2", "shadow-sm",
-                "focus:ring-blue-500", "focus:border-blue-500", "sm:text-sm", "bg-gray-100");
-
-            let inputValue = document.createElement("input");
-            inputValue.type = "text";
-            inputValue.name = "attribute_value[]";
-            inputValue.placeholder = "Giá trị";
-            inputValue.required = true;
-            inputValue.classList.add("block", "w-full", "rounded-md", "border-gray-400", "p-2", "shadow-sm",
-                "focus:ring-blue-500", "focus:border-blue-500", "sm:text-sm", "bg-gray-100");
-
-            let removeBtn = document.createElement("button");
-            removeBtn.innerHTML = "Xóa";
-            removeBtn.type = "button";
-            removeBtn.classList.add("text-red-500", "hover:text-red-700", "text-sm", "font-semibold");
-            removeBtn.onclick = function() {
-                container.removeChild(div);
-            };
-
-            div.appendChild(inputName);
-            div.appendChild(inputValue);
-            div.appendChild(removeBtn);
-
-            container.appendChild(div);
+                    imgContainer.innerHTML = `
+                    <img src="${e.target.result}" class="w-full h-32 object-cover rounded">
+                    <label class="flex items-center gap-2 text-sm mt-1">
+                        <input type="radio" name="is_primary" value="${index}" class="text-blue-600 focus:ring-blue-500">
+                        Ảnh chính
+                    </label>
+                `;
+                    previewContainer.appendChild(imgContainer);
+                };
+                reader.readAsDataURL(file);
+            });
         }
     </script>
 @endpush

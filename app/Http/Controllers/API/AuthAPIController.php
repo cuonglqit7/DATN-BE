@@ -46,7 +46,7 @@ class AuthAPIController extends Controller
 
             if (!$user || !Hash::check(request('password'), $user->password) || !$user->hasRole(['user'])) {
                 throw ValidationException::withMessages([
-                    'email' => ['Thông tin đăng nhập của nhà cung cấp không chính xác.'],
+                    'error' => ['Thông tin đăng nhập của nhà cung cấp không chính xác.'],
                 ]);
             }
 

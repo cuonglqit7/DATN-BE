@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\Cache;
 class Product extends Model
 {
     use HasFactory;
-    protected $fillable = ['product_name', 'slug', 'description', 'price', 'promotion_price', 'quantity_in_stock', 'quantity_sold', 'status', 'category_id'];
+    protected $fillable = ['product_name', 'slug', 'description', 'price', 'promotion_price', 'quantity_in_stock', 'quantity_sold', 'best_selling', 'featured', 'status', 'category_id'];
 
     public function category()
     {
