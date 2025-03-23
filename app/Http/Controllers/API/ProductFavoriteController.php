@@ -184,23 +184,19 @@ class ProductFavoriteController extends Controller
      *     )
      * )
      */
-    public function isFavorite(Request $request)
+    public function isFavorite(Request $request, string $id)
     {
         try {
-            $request->validate([
-                'product_id' => 'required|exists:products,id',
-            ]);
-
             $user = auth()->user();
 
             $isFavorite = ProductFavorite::where('user_id', $user->id)
-                ->where('product_id', $request->product_id)
+                ->where('product_id', $id)
                 ->exists();
 
             return response()->json([
                 'message' => $isFavorite ? 'Sản phẩm đã được thích' : 'Sản phẩm chưa được thích',
-                'favorite' => $isFavorite
-            ], $isFavorite ? Response::HTTP_OK : Response::HTTP_NOT_FOUND);
+                'isFavorite' => $isFavorite
+            ], Response::HTTP_OK);
         } catch (\Throwable $th) {
             return response()->json([
                 'message' => 'Đã có lỗi xảy ra, vui lòng thử lại sau.'

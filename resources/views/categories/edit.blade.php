@@ -4,7 +4,7 @@
     <x-component-navbar active="category" />
 @endsection
 @section('content')
-    <div class="max-w-7xl mx-auto bg-white p-3 rounded-lg shadow-md text-sm">
+    <div class="mx-auto bg-white p-3 rounded-lg shadow-md text-sm">
         <div class="flex items-center mb-3 justify-between">
             <nav class="flex" aria-label="Breadcrumb">
                 <ol class="inline-flex items-center space-x-1 md:space-x-2 rtl:space-x-reverse">

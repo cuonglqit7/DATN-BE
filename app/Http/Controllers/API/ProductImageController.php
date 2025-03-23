@@ -60,7 +60,7 @@ class ProductImageController extends Controller
             }
             return response()->json([
                 'message' => 'Lấy hình avatar thành công',
-                'data' => asset('storage/ ' . $avatar . ''),
+                'data' => asset('storage/' . $avatar->image_url),
             ], Response::HTTP_OK);
         } catch (\Throwable $th) {
             return $this->errorResponse("Fetch avatar fail", $th->getMessage());

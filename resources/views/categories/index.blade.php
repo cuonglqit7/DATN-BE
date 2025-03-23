@@ -4,7 +4,7 @@
     <x-component-navbar active="category" />
 @endsection
 @section('content')
-    <div class="max-w-7xl mx-auto bg-white p-3 rounded-lg shadow-md text-sm">
+    <div class="h-full mx-auto bg-white p-3 rounded-lg shadow-md text-sm">
         <div class="flex items-center mb-3 justify-between">
             <nav class="flex" aria-label="Breadcrumb">
                 <ol class="inline-flex items-center space-x-1 md:space-x-2 rtl:space-x-reverse">
@@ -139,20 +139,6 @@
                                         </svg>
                                     </a>
                                 @endcan
-                                @can('category-delete')
-                                    <form action="{{ route('categories.destroy', $category->slug) }}" method="POST"
-                                        onsubmit="return confirm('Bạn có chắc chắn muốn xóa?');">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button class="p-2 bg-red-500 hover:bg-red-600 rounded-full text-white transition-all">
-                                            <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" fill="currentColor"
-                                                viewBox="0 0 24 24">
-                                                <path
-                                                    d="M8.586 2.586A2 2 0 0 1 10 2h4a2 2 0 0 1 2 2v2h3a1 1 0 1 1 0 2v12a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V8a1 1 0 0 1 0-2h3V4a2 2 0 0 1 .586-1.414ZM10 6h4V4h-4v2Zm1 4a1 1 0 1 0-2 0v8a1 1 0 1 0 2 0v-8Zm4 0a1 1 0 1 0-2 0v8a1 1 0 1 0 2 0v-8Z" />
-                                            </svg>
-                                        </button>
-                                    </form>
-                                @endcan
                             </td>
                         </tr>
                     @endif
@@ -175,22 +161,5 @@
             });
         });
     </script>
-    <script>
-        @if (session('success'))
-            toastr.options = {
-                "closeButton": true,
-                "progressBar": true,
-                "positionClass": "toast-top-right",
-                "timeOut": "5000",
-                "showMethod": "slideDown",
-                "hideMethod": "slideUp",
-            };
-
-            toastr.success("{{ session('success') }}", "Thành công 🎉");
-        @endif
-
-        @if (session('error'))
-            toastr.error("{{ session('error') }}");
-        @endif
-    </script>
+    <x-toastr />
 @endpush

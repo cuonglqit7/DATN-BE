@@ -41,7 +41,7 @@ class ProductController extends Controller
         $notifications = [];
         foreach ($products as $product) {
             if ($product->quantity_in_stock < 10) {
-                $notifications["quantity_in_tock"][$product->id] = "Số lượng sản phẩm " . $product->product_name . " hiện tại còn " . $product->quantity_in_stock . " đã tới ngưỡng cảnh báo 10 với trạng thái tồn kho thấp.";
+                $notifications["quantity_in_stock"][$product->id] = "Số lượng sản phẩm " . $product->product_name . " hiện tại còn " . $product->quantity_in_stock . " đã tới ngưỡng cảnh báo 10 với trạng thái tồn kho thấp.";
             }
         }
         return view('products.index', compact('products', 'numperpage', 'notifications'));
@@ -74,7 +74,7 @@ class ProductController extends Controller
             'attribute_values' => 'required|array',
             'description'    => 'nullable|string',
             'status'         => 'required|boolean',
-            'images'         => 'required|array|max:5',
+            'images'         => 'required|array',
             'images.*'       => 'image|mimes:jpeg,png,jpg,gif,svg|max:2048'
         ])->after(function ($validator) use ($request) {
             if ($request->filled('promotion_price') && $request->promotion_price >= $request->price) {
@@ -100,8 +100,6 @@ class ProductController extends Controller
             'status' => $request->status,
             'category_id' => $request->category
         ]);
-
-        dd($product);
 
         foreach ($request->attribute_names as $index => $attribute_name) {
             ProductAttribute::create([
@@ -162,18 +160,28 @@ class ProductController extends Controller
      */
     public function update(Request $request, string $id)
     {
+        // dd($request->all());
         $validator = Validator::make($request->all(), [
             'product_name'   => 'required|string|max:255',
             'price'          => 'required|numeric|min:0',
+            'promotion_price' => 'required|numeric|min:0',
             'category'       => 'required',
             'attribute_name' => 'nullable|array',
             'attribute_value' => 'nullable|array',
             'quantity_in_stock' => 'required|numeric|min:0',
+            'best_selling'  => 'required|numeric',
+            'featured'      => 'required|numeric',
             'description'    => 'nullable|string',
             'status'         => 'required|boolean',
-            'images'         => 'nullable|array|max:5',
+            'images'         => 'nullable|array',
+            'old_images' => 'array',
+            'is_primary' => 'nullable|exists:product_images,id',
             'images.*'       => 'image|mimes:jpeg,png,jpg,gif,svg|max:2048'
-        ]);
+        ])->after(function ($validator) use ($request) {
+            if ($request->filled('promotion_price') && $request->promotion_price >= $request->price) {
+                $validator->errors()->add('promotion_price', 'Giá khuyến mãi phải nhỏ hơn giá gốc.');
+            }
+        });
 
         if ($validator->fails()) {
             return redirect()->back()
@@ -181,16 +189,85 @@ class ProductController extends Controller
                 ->withInput();
         }
 
-        $product = Product::find($id);
+        $product = Product::findOrFail($id);
         $product->update([
             'product_name' => $request->product_name,
             'slug' => Str::slug($request->product_name),
+            'price' => $request->price,
+            'promotion_price' => $request->promotion_price,
             'description' => $request->description,
             'quantity_in_stock' => $request->quantity_in_stock,
-            'price' => $request->price,
+            'best_selling' => $request->best_selling,
+            'featured' => $request->featured,
             'status' => $request->status,
             'category_id' => $request->category
         ]);
+
+        // Lấy danh sách ID thuộc tính cũ từ DB
+        $existingAttributeIds = $product->attributes->pluck('id')->toArray();
+
+        // Dữ liệu từ form
+        $attributeIds = $request->attribute_ids;
+        $attributeNames = $request->attribute_names;
+        $attributeValues = $request->attribute_values;
+
+        $newAttributeIds = [];
+
+        foreach ($attributeNames as $index => $name) {
+            $attributeId = $attributeIds[$index] ?? null;
+            $value = $attributeValues[$index] ?? null;
+
+            if ($attributeId) {
+                // Cập nhật thuộc tính cũ
+                ProductAttribute::where('id', $attributeId)
+                    ->where('product_id', $product->id)
+                    ->update([
+                        'attribute_name' => $name,
+                        'attribute_value' => $value,
+                    ]);
+                $newAttributeIds[] = $attributeId;
+            } else {
+                // Tạo thuộc tính mới
+                $newAttribute = ProductAttribute::create([
+                    'product_id' => $product->id,
+                    'attribute_name' => $name,
+                    'attribute_value' => $value,
+                ]);
+                $newAttributeIds[] = $newAttribute->id;
+            }
+        }
+
+        // Xóa thuộc tính không có trong danh sách mới
+        $attributesToDelete = array_diff($existingAttributeIds, $newAttributeIds);
+        ProductAttribute::whereIn('id', $attributesToDelete)->delete();
+
+        // Xóa ảnh cũ nếu không giữ lại
+        $oldImages = $request->old_images ?? [];
+        ProductImage::where('product_id', $product->id)
+            ->whereNotIn('id', $oldImages)
+            ->each(function ($image) {
+                Storage::delete('public/' . $image->image_url);
+                $image->delete();
+            });
+
+        // Upload ảnh mới
+        if ($request->hasFile('images')) {
+            foreach ($request->file('images') as $image) {
+                $path = $image->store('products', 'public');
+
+                ProductImage::create([
+                    'product_id' => $product->id,
+                    'image_url' => $path,
+                    'is_primary' => false,
+                ]);
+            }
+        }
+
+        // Cập nhật ảnh chính
+        ProductImage::where('product_id', $product->id)->update(['is_primary' => false]);
+        if ($request->is_primary) {
+            ProductImage::where('id', $request->is_primary)->update(['is_primary' => true]);
+        }
 
         return redirect()->route('products.index')->with('success', 'Cập nhật sản phẩm thành công!');
     }

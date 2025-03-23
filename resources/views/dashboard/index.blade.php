@@ -8,3 +8,6 @@
         dashboard
     </div>
 @endsection
+@push('scripts')
+    <x-toastr />
+@endpush

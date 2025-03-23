@@ -4,11 +4,14 @@ namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
 use App\Models\Category;
+use App\Traits\SendResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\Storage;
 
 class CategoryController extends Controller
 {
+    use SendResponse;
     /**
      * @OA\Get(
      *     path="/api/categories",
@@ -50,6 +53,14 @@ class CategoryController extends Controller
         try {
             $categories = Category::orderBy('position', 'ASC')->get();
 
+            // Dùng map() để biến đổi danh sách
+            $categories = $categories->map(function ($category) {
+                $category->image_url = $category->image_url
+                    ? asset(Storage::url($category->image_url))
+                    : null;
+                return $category;
+            });
+
             return response()->json([
                 'message' => 'Lấy danh sách danh mục sản phẩm thành công',
                 'data' => $categories
@@ -58,6 +69,7 @@ class CategoryController extends Controller
             return $this->errorResponse("Lấy danh sách danh mục sản phẩm thất bại", $th->getMessage());
         }
     }
+
 
     /**
      * @OA\Get(

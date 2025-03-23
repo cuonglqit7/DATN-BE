@@ -4,7 +4,7 @@
     <x-component-navbar active="product" />
 @endsection
 @section('content')
-    <div class="max-w-7xl mx-auto bg-white p-3 rounded-lg shadow-md text-sm">
+    <div class="mx-auto bg-white p-3 rounded-lg shadow-md text-sm">
         <div class="flex items-center mb-5 justify-between">
             <nav class="flex" aria-label="Breadcrumb">
                 <ol class="inline-flex items-center space-x-1 md:space-x-2 rtl:space-x-reverse">
@@ -29,8 +29,8 @@
                     </li>
                 </ol>
             </nav>
-            <a href="{{ route('products.index') }}"
-                class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 text-xs">Về trước</a>
+            <a href="{{ url()->previous() }}" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 text-xs">Về
+                trước</a>
         </div>
         <hr class="h-px my-2 bg-gray-200 border-0 dark:bg-gray-700">
         @if ($notification)

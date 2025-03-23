@@ -5,6 +5,7 @@ namespace Database\Seeders;
 use App\Models\User;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\Hash;
 use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
 
@@ -85,6 +86,26 @@ class PermissionSeeder extends Seeder
         $adminUser = User::first();
         if ($adminUser) {
             $adminUser->assignRole('admin');
+        }
+
+        $role = Role::firstOrCreate(['name' => 'user']);
+
+        for ($i = 1; $i <= 10; $i++) {
+            $user = User::create([
+                'name' => "User $i",
+                'email' => "user$i@example.com",
+                'password' => Hash::make('123'),
+                'avatar' => null,
+                'gender' => ['Male', 'Female', 'Other'][array_rand(['Male', 'Female', 'Other'])],
+                'dob' => now()->subYears(rand(18, 40))->format('Y-m-d'),
+                'phone' => '09876543' . rand(10, 99),
+                'address' => "123 Street, City $i",
+                'google_id' => null,
+                'status' => true,
+            ]);
+
+            // Gán role "User" cho user
+            $user->assignRole($role);
         }
     }
 }

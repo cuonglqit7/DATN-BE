@@ -7,6 +7,8 @@ use App\Models\Product;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use App\Traits\SendResponse;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
 
 /**
  * @OA\Tag(
@@ -88,23 +90,16 @@ class ProductController extends Controller
         try {
             $limit = is_numeric($request->limit) ? (int) $request->limit : 8;
 
-            $query = Product::with('category', 'attributes');
-
-            // Lọc theo danh mục
-            if ($request->has('category_id')) {
-                $query->where('category_id', $request->category_id);
-            }
-
-            // Lọc theo giá
-            if ($request->has('min_price')) {
-                $query->where('promotion_price', '>=', $request->min_price);
-            }
-            if ($request->has('max_price')) {
-                $query->where('promotion_price', '<=', $request->max_price);
-            }
+            $query = Product::with('avatar', 'category', 'attributes');
 
             // Phân trang
             $products = $query->orderBy('created_at', 'DESC')->paginate($limit);
+
+            // Thêm full URL cho avatar
+            $products->getCollection()->transform(function ($product) {
+                $product->avatar_url = $product->avatar ? asset(Storage::url($product->avatar->image_url)) : null;
+                return $product;
+            });
 
             return $this->successResponse($products, "Lấy danh sách sản phẩm thành công");
         } catch (\Throwable $th) {
@@ -157,18 +152,62 @@ class ProductController extends Controller
      *     )
      * )
      */
+    public function show($slug)
+    {
+        $product = Product::with('category', 'images', 'attributes', 'productReviews')
+            ->where('slug', $slug)
+            ->first();
+
+        if (!$product) {
+            return response()->json(['message' => 'Product not found'], 404);
+        }
+
+        // Chỉnh sửa đường dẫn của tất cả hình ảnh trước khi trả về
+        $product->images = $product->images->map(function ($image) {
+            $image->url = url('storage/' . $image->image_url); // hoặc Storage::url($image->path)
+            return $image;
+        });
+
+        return response()->json($product, 200);
+    }
+
     public function getById($id)
     {
+        $product = Product::with('avatar')->find($id);
+
+        if (!$product) {
+            return response()->json(['message' => 'Product not found'], 404);
+        }
+
+        // Thêm full URL vào avatar
+        $product->avatar_url = $product->avatar ? asset('storage/' . $product->avatar->image_url) : null;
+
+        return response()->json($product, 200);
+    }
+
+
+
+
+    public function getBestSellingProducts()
+    {
         try {
-            $product = Product::with('category')->find($id);
+            $oneWeekAgo = now()->subWeek(); // Lấy thời điểm một tuần trước
 
-            if (!$product) {
-                return $this->errorResponse("Không tìm thấy sản phẩm", "Not Found");
-            }
+            $products = Product::with('avatar', 'category', 'attributes')
+                ->where('best_selling', true)
+                ->whereBetween('updated_at', [$oneWeekAgo, now()]) // Lọc theo thời gian cập nhật trong tuần qua
+                ->orderBy('quantity_sold', 'DESC')
+                ->limit(8)->get();
 
-            return $this->successResponse($product, "Lấy chi tiết sản phẩm thành công");
+            // Gắn full URL cho avatar
+            $products->transform(function ($product) {
+                $product->avatar_url = $product->avatar ? asset(Storage::url($product->avatar->image_url)) : null;
+                return $product;
+            });
+
+            return $this->successResponse($products, "Lấy danh sách sản phẩm bán chạy trong tuần qua thành công");
         } catch (\Throwable $th) {
-            return $this->errorResponse("Lấy chi tiết sản phẩm thất bại", $th->getMessage());
+            return $this->errorResponse("Lấy danh sách thất bại", $th->getMessage());
         }
     }
 }

@@ -10,11 +10,14 @@ class Discount extends Model
     use HasFactory;
 
     protected $fillable = [
+        'code',
+        'description',
         'discount_type',
         'discount_value',
         'start_date',
         'end_date',
-        'created_at',
+        'numper_usage',
+        'status',
     ];
 
     public function orders()

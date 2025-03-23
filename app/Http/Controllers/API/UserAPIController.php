@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\Storage;
 
 class UserAPIController extends Controller
 {
@@ -43,6 +44,7 @@ class UserAPIController extends Controller
      *     )
      * )
      */
+
     public function show()
     {
         try {
@@ -54,6 +56,9 @@ class UserAPIController extends Controller
                 ], Response::HTTP_NOT_FOUND);
             }
 
+            // Tạo URL đầy đủ cho avatar nếu có
+            $user->avatar = $user->avatar ? asset(Storage::url($user->avatar)) : null;
+
             return response()->json([
                 'message' => 'Fetch user successfully',
                 'data' => $user
@@ -64,6 +69,8 @@ class UserAPIController extends Controller
             ], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
+
+
 
     /**
      * @OA\Put(

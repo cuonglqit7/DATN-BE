@@ -14,10 +14,10 @@ class UserController extends Controller
      */
     public function index(Request $request)
     {
-        $numperpage = $request->record_number ?? 10;
+        $numperpage = $request->record_number ?? 5;
         $users = User::query()
-            ->when($request->name, function ($query) use ($request) {
-                $query->where('name', 'like', '%' . $request->name . '%');
+            ->when($request->email, function ($query) use ($request) {
+                $query->where('email', 'like', '%' . $request->email . '%');
             })
             ->role('user')
             ->orderBy('id', 'DESC')
@@ -115,5 +115,32 @@ class UserController extends Controller
         $user->status = !$user->status;
         $user->save();
         return back()->with('success', 'Trạng thái người dùng đã được cập nhật!');
+    }
+
+    public function toggleOn(Request $request)
+    {
+        $ids = explode(',', $request->user_ids);
+
+        if (empty($ids) || count($ids) === 0) {
+            return redirect()->back()->with('error', 'Vui lòng chọn ít nhất một bài viết.');
+        }
+
+        User::whereIn('id', $ids)->update([$request->fields => true]);
+
+        return redirect()->back()->with('success', 'Đã cập nhật các bài viết đã chọn.');
+    }
+
+    public function toggleOff(Request $request)
+    {
+        // dd($request->all());
+        $ids = explode(',', $request->user_ids);
+
+        if (empty($ids) || count($ids) === 0) {
+            return redirect()->back()->with('error', 'Vui lòng chọn ít nhất một bài viết.');
+        }
+
+        User::whereIn('id', $ids)->update([$request->fields => false]);
+
+        return redirect()->back()->with('success', 'Đã cập nhật các bài viết đã chọn.');
     }
 }

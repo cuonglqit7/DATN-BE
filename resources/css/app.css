@@ -1,8 +1,49 @@
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-/* custom font-size toast */
-#toast-container > .toast {
-    font-size: 12px !important;
+/* Giảm kích thước icon */
+.toast-success::before,
+.toast-error::before,
+.toast-info::before,
+.toast-warning::before {
+    font-size: 16px !important; /* Giảm kích thước icon */
+}
+
+/* Giảm kích thước nội dung message */
+.toast-message {
+    font-size: 12px !important; /* Giảm kích thước chữ */
+}
+
+
+.ck-content {
+    font-size: 1rem;
+    color: #1f2937; /* Màu text xám đậm của Tailwind */
+}
+
+/* Tuỳ chỉnh các heading */
+.ck-content h1 {
+    @apply text-3xl font-bold;
+}
+
+.ck-content h2 {
+    @apply text-2xl font-semibold;
+}
+
+.ck-content h3 {
+    @apply text-xl font-medium;
+}
+
+/* Paragraph và danh sách */
+.ck-content p {
+    @apply text-base;
+}
+
+.ck-content ul {
+    @apply list-disc list-inside;
+}
+
+.ck-content ol {
+    @apply list-decimal list-inside;
 }

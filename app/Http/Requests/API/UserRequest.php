@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\API;
 
+use App\Models\User;
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\Exceptions\HttpResponseException;
@@ -27,13 +28,28 @@ class UserRequest extends FormRequest
         return [
             'name' => 'required|string|max:255',
             'email' => 'required|string|email',
-            'password' => 'required|string|min:8|max:20|confirmed',
+            'password' => 'required|string|min:6|max:100|confirmed',
         ];
     }
 
     protected function failedValidation(Validator $validator)
     {
         $errors = $validator->errors();
+
+        // Kiểm tra nếu có lỗi trùng email
+        if (request()->isMethod('post') && request()->has('email')) {
+            $email = request()->input('email');
+            if (User::where('email', $email)->exists()) {
+                $response = response()->json([
+                    'errors' => [
+                        'field' => 'email',
+                        'message' => 'Email đã tồn tại'
+                    ],
+                ], Response::HTTP_BAD_REQUEST);
+
+                throw new HttpResponseException($response);
+            }
+        }
 
         $response = response()->json([
             'errors' => $errors->messages(),

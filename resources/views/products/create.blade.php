@@ -4,7 +4,7 @@
     <x-component-navbar active="product" />
 @endsection
 @section('content')
-    <div class="max-w-7xl mx-auto bg-white p-3 rounded-lg shadow-md text-sm">
+    <div class="mx-auto bg-white p-3 rounded-lg shadow-md text-sm">
         <div class="flex items-center mb-5 justify-between">
             <nav class="flex" aria-label="Breadcrumb">
                 <ol class="inline-flex items-center space-x-1 md:space-x-2 rtl:space-x-reverse">
@@ -29,8 +29,8 @@
                     </li>
                 </ol>
             </nav>
-            <a href="{{ route('products.index') }}"
-                class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 text-xs">Về trước</a>
+            <a href="{{ url()->previous() }}" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 text-xs">Về
+                trước</a>
         </div>
         <hr class="h-px my-2 bg-gray-200 border-0 dark:bg-gray-700">
         <div class="mx-auto bg-white p-6">
@@ -213,14 +213,15 @@
                     <div class="mb-3">
                         <label for="status" class="block font-semibold">Trạng thái hiển thị</label>
                         <select id="status" name="status" class="w-full p-2 border rounded">
-                            <option value="1" {{ old('status') == 1 ? 'selected' : '' }}>Hiển thị</option>
-                            <option value="0" {{ old('status') == 0 ? 'selected' : '' }}>Ẩn</option>
+                            <option value="1" {{ old('status') === 1 ? 'selected' : '' }}>Hiển thị</option>
+                            <option value="0" {{ old('status') === 0 ? 'selected' : '' }}>Ẩn</option>
                         </select>
                         @error('status')
                             <p class="text-red-500 text-sm">{{ $message }}</p>
                         @enderror
                     </div>
-                    <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded">Thêm sản phẩm</button>
+                    <button type="submit" class="bg-blue-600 text-white p-2 rounded hover:bg-blue-700 transition">Thêm
+                        sản phẩm</button>
                 </div>
             </form>
         </div>

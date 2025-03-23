@@ -1,11 +1,11 @@
 @props(['active'])
 <aside class="fixed top-0 left-0 h-full w-64 bg-white text-gray-900 flex flex-col justify-between shadow-lg">
     <div>
-        <div class="flex items-center justify-start p-4 gap-2">
+        <div class="flex items-center justify-start px-4 py-2.5 gap-2">
             <img class="rounded-full w-8" src="{{ asset('logo.png') }}" alt="Logo">
             <span class="text-2xl font-bold text-black-800">Teabliss</span>
         </div>
-        <hr class="h-px my-2 bg-gray-200 border-0">
+        <hr class="h-px bg-gray-200 border-0">
 
         <nav class="flex flex-col space-y-2 p-4 rounded-lg text-gray-900 bg-white w-64">
             <!-- Dashboard -->
@@ -58,16 +58,16 @@
                     <a href="{{ route('categories.index') }}"
                         class="block px-3 py-2 hover:bg-gray-200 rounded text-sm transition-all text-gray-900">Sản
                         phẩm</a>
-                    <a href="#"
+                    <a href="{{ route('articleCategories.index') }}"
                         class="block px-3 py-2 hover:bg-gray-200 rounded text-sm transition-all text-gray-900">Bài
                         viết</a>
                 </div>
             </div>
 
             <!-- Bài viết -->
-            <a href="#"
+            <a href="{{ route('articles.index') }}"
                 class="flex items-center px-3 py-2 rounded text-sm transition-all duration-200 gap-2
-                       {{ $active === 'order' ? 'bg-blue-100' : 'hover:bg-gray-200' }}">
+                       {{ $active === 'article' ? 'bg-blue-100' : 'hover:bg-gray-200' }}">
                 <svg class="w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
                     width="24" height="24" fill="none" viewBox="0 0 24 24">
                     <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -77,8 +77,20 @@
                 Bài viết
             </a>
 
+            <!-- Bài viết -->
+            <a href="{{ route('articles.index') }}"
+                class="flex items-center px-3 py-2 rounded text-sm transition-all duration-200 gap-2
+                       {{ $active === 'banner' ? 'bg-blue-100' : 'hover:bg-gray-200' }}">
+                <svg class="w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
+                    width="24" height="24" fill="none" viewBox="0 0 24 24">
+                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M18 5V4a1 1 0 0 0-1-1H8.914a1 1 0 0 0-.707.293L4.293 7.207A1 1 0 0 0 4 7.914V20a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-5M9 3v4a1 1 0 0 1-1 1H4m11.383.772 2.745 2.746m1.215-3.906a2.089 2.089 0 0 1 0 2.953l-6.65 6.646L9 17.95l.739-3.692 6.646-6.646a2.087 2.087 0 0 1 2.958 0Z" />
+                </svg>
+                Banner
+            </a>
+
             <!-- Đơn hàng -->
-            <a href="#"
+            <a href="{{ route('orders.index') }}"
                 class="flex items-center px-3 py-2 rounded text-sm transition-all duration-200 gap-2
                        {{ $active === 'order' ? 'bg-blue-100' : 'hover:bg-gray-200' }}">
                 <svg class="w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
@@ -91,11 +103,12 @@
             </a>
 
             <!-- Khuyến mãi -->
-            <a href="#"
+            <a href="{{ route('discounts.index') }}"
                 class="flex items-center px-3 py-2 rounded text-sm transition-all duration-200 gap-2
                        {{ $active === 'promo' ? 'bg-blue-100' : 'hover:bg-gray-200' }}">
-                <svg class="w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
-                    width="24" height="24" fill="none" viewBox="0 0 24 24">
+                <svg class="w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true"
+                    xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none"
+                    viewBox="0 0 24 24">
                     <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                         d="M18.5 12A2.5 2.5 0 0 1 21 9.5V7a1 1 0 0 0-1-1H4a1 1 0 0 0-1 1v2.5a2.5 2.5 0 0 1 0 5V17a1 1 0 0 0 1 1h16a1 1 0 0 0 1-1v-2.5a2.5 2.5 0 0 1-2.5-2.5Z" />
                 </svg>
@@ -121,7 +134,7 @@
             <!-- Chat -->
             <a href="#"
                 class="flex items-center px-3 py-2 rounded text-sm transition-all duration-200 gap-2
-                       {{ $active === 'promo' ? 'bg-blue-100' : 'hover:bg-gray-200' }}">
+                       {{ $active === 'chat' ? 'bg-blue-100' : 'hover:bg-gray-200' }}">
                 <svg class="w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true"
                     xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none"
                     viewBox="0 0 24 24">

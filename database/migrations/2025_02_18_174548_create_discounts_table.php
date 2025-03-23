@@ -14,10 +14,13 @@ return new class extends Migration
         Schema::create('discounts', function (Blueprint $table) {
             $table->id();
             $table->string('code', 50)->unique();
+            $table->string('description')->nullable();
             $table->enum('discount_type', ['Percentage', 'Fixed Amount']);
             $table->decimal('discount_value', 10, 2);
             $table->date('start_date');
             $table->date('end_date');
+            $table->integer('numper_usage')->default(1)->check('numper_usage' > 0);
+            $table->enum('status', ['active', 'inactive', 'upcoming', 'expired'])->default('inactive');
             $table->timestamps();
         });
     }

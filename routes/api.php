@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\API\ArticleCategoryController;
+use App\Http\Controllers\API\ArticleController;
 use App\Http\Controllers\API\AuthAPIController;
 use App\Http\Controllers\API\BannerController;
 use App\Http\Controllers\API\CategoryController;
@@ -12,16 +13,20 @@ use App\Http\Controllers\API\ProductFavoriteController;
 use App\Http\Controllers\API\ProductImageController;
 use App\Http\Controllers\API\OrderController;
 use App\Http\Controllers\API\PaymentController;
+use App\Http\Controllers\ArticleImageController;
 use App\Http\Controllers\ProductReviewController;
 use Illuminate\Support\Facades\Route;
 use L5Swagger\Http\Controllers\SwaggerController;
+
 
 Route::get('/api/documentation', [SwaggerController::class, 'api']);
 
 Route::prefix('v1')->group(function () {
     //người dùng
-    Route::post('login', [AuthAPIController::class, 'login']);
-    Route::post('register', [AuthAPIController::class, 'register']);
+    Route::post('/login', [AuthAPIController::class, 'login']);
+    Route::post('/register', [AuthAPIController::class, 'register']);
+    Route::post('/forgot-password', [AuthController::class, 'forgotPassword']);
+    Route::post('/reset-password', [AuthController::class, 'resetPassword']);
 
     //banner
     Route::get('/banners', [BannerController::class, 'getAll']);
@@ -33,7 +38,9 @@ Route::prefix('v1')->group(function () {
 
     //sản phẩm
     Route::get('/products', [ProductController::class, 'getAll']);
-    Route::get('/products/{id}', [ProductController::class, 'getById']);
+    Route::get('/products/{slug}', [ProductController::class, 'show']);
+
+    // Route::get('/products/best-selling', [ProductController::class, 'getBestSellingProducts']);
 
     //hình ảnh sản phẩm
     Route::get('/products/{product_id}/avatar', [ProductImageController::class, 'getAvatar']);
@@ -47,12 +54,10 @@ Route::prefix('v1')->group(function () {
     Route::get('/articleCategories', [ArticleCategoryController::class, 'getAll']);
 
     //bài viết
-    Route::get('/articles', [ArticleCategoryController::class, 'getAll']);
-    Route::get('/articles/{id}', [ArticleCategoryController::class, 'getById']);
+    Route::get('/articles', [ArticleController::class, 'getAll']);
+    Route::get('/articles/{id}', [ArticleController::class, 'getById']);
 
-    //đặt hàng
-    Route::post('/orders', [OrderController::class, 'createOrder']);
-    Route::post('/cancelOrder/{id}', [OrderController::class, 'cancelOrder']);
+
 
     //payment
     Route::post('/payments', [PaymentController::class, 'createPayment']);
@@ -70,10 +75,14 @@ Route::prefix('v1')->group(function () {
         Route::post('/logout', [AuthAPIController::class, 'logout']);
 
         //sản phẩm yêu thích
-        Route::get('/getUserFavorites', [ProductFavoriteController::class, 'getUserFavorites']);
-        Route::post('/addToFavorites', [ProductFavoriteController::class, 'addToFavorites']);
-        Route::post('/removeFromFavorites', [ProductFavoriteController::class, 'removeFromFavorites']);
-        Route::post('/isFavorite', [ProductFavoriteController::class, 'isFavorite']);
+        Route::get('/favorites', [ProductFavoriteController::class, 'getUserFavorites']);
+        Route::post('/favorites', [ProductFavoriteController::class, 'addToFavorites']);
+        Route::delete('/favorites', [ProductFavoriteController::class, 'removeFromFavorites']);
+        Route::get('/favorites/{id}/check', [ProductFavoriteController::class, 'isFavorite']);
+
+        //đặt hàng
+        Route::post('/orders', [OrderController::class, 'createOrder']);
+        Route::post('/cancelOrder/{id}', [OrderController::class, 'cancelOrder']);
 
         //đơn hàng
         Route::get('/orders', [OrderController::class, 'getOrderByIp']);
@@ -86,4 +95,11 @@ Route::prefix('v1')->group(function () {
             Route::delete('/{id}', [ProductReviewController::class, 'deleteReview']);
         });
     });
+
+    Route::middleware('auth:sanctum')->post('/upload-articleImage', [ArticleImageController::class, 'upload']);
+});
+
+Route::prefix('v2')->group(function () {
+    Route::get('/products/best-selling', [ProductController::class, 'getBestSellingProducts']);
+    Route::get('/products/{id}', [ProductController::class, 'getById']);
 });

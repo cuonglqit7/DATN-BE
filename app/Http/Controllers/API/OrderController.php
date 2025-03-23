@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
+use App\Models\Cart;
 use App\Models\Discount;
 use App\Models\Order;
 use App\Models\OrderDiscount;
@@ -11,6 +12,7 @@ use App\Models\Product;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Str;
 
 class OrderController extends Controller
 {
@@ -77,6 +79,13 @@ class OrderController extends Controller
     public function createOrder(Request $request)
     {
         try {
+            $user = auth()->user();
+            if (!$user) {
+                return response()->json([
+                    'error' => 'Unauthorized. Please log in to create an order.',
+                ], Response::HTTP_UNAUTHORIZED);
+            }
+
             $validator = Validator::make($request->all(), [
                 'user_id' => 'nullable|exists:users,id',
                 'recipient_name' => 'required|string|max:50',
@@ -110,26 +119,34 @@ class OrderController extends Controller
                 ], Response::HTTP_BAD_REQUEST);
             }
 
+            // Generate a unique 11-character order code
+            $orderCode = $this->generateUniqueOrderCode();
+
+            if ($request->payment_method == 'cod') {
+                $payment_status = 'Completed';
+            } else {
+                $payment_status = 'Pending';
+            }
+
             $order = Order::create([
-                'user_id' => $request->user_id,
+                'user_id' => $user->id,
+                'code' => $this->generateUniqueOrderCode(),
                 'recipient_name' => $request->recipient_name,
                 'recipient_phone' => $request->recipient_phone,
                 'shipping_address' => $request->shipping_address,
                 'total_price' => $request->total_price,
                 'payment_method' => $request->payment_method,
-                'payment_status' => 'Pending',
+                'payment_status' => $payment_status,
                 'status' => 'Pending',
                 'user_note' => $request->user_note,
                 'admin_note' => null,
-                'ip_address' => $request->getClientIp(),
             ]);
 
             foreach ($request->items as $item) {
                 $product = Product::findOrFail($item['product_id']);
-                $unit_price = $product->promotion_price;
+                $unit_price = $product->promotion_price ?? $product->price;
                 $total_price = $unit_price * $item['quantity'];
 
-                // Kiểm tra số lượng tồn kho trước khi trừ
                 if ($product->quantity_in_stock < $item['quantity']) {
                     return response()->json([
                         'error' => "Sản phẩm $product->product_name không đủ hàng trong kho.",
@@ -145,8 +162,12 @@ class OrderController extends Controller
                     'product_id' => $item['product_id'],
                     'quantity' => $item['quantity'],
                     'unit_price' => $unit_price,
-                    'total_price' => $total_price,
                 ]);
+
+                // Delete the cart item (assuming cart_id is sent in items)
+                if (isset($item['cart_id'])) {
+                    Cart::where('id', $item['cart_id'])->where('user_id', $user->id)->delete();
+                }
             }
 
             if (!empty($request->discounts)) {
@@ -169,6 +190,17 @@ class OrderController extends Controller
         }
     }
 
+    // Helper method to generate a unique 11-character order code
+    private function generateUniqueOrderCode(): string
+    {
+        do {
+            // Generate a random 11-character code (e.g., "ORD-XXXXXXX")
+            $code = '#ORD' . Str::upper(Str::random(7)); // ORD- plus 7 random chars
+            // Ensure length is exactly 11; adjust if needed
+        } while (Order::where('code', $code)->exists()); // Check uniqueness
+
+        return $code;
+    }
 
     /**
      * @OA\Post(
