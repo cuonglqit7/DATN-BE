@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Article;
 use App\Traits\SendResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class ArticleController extends Controller
 {
@@ -123,6 +124,31 @@ class ArticleController extends Controller
             }
 
             return $this->successResponse($article, "Lấy chi tiết bài viết thành công");
+        } catch (\Throwable $th) {
+            return $this->errorResponse("Lấy chi tiết bài viết thất bại", $th->getMessage());
+        }
+    }
+
+    public function getArticleProducts(Request $request, string $id)
+    {
+        try {
+
+            $articles = Article::where('product_id', $id)
+                ->where('status', 1)->orderBy('created_at', 'desc')
+                ->paginate(4);
+
+            if (!$articles) {
+                return $this->errorResponse("Lấy bài viết về sản phẩm thất bại", "Không tìm thấy");
+            }
+
+            $articles->getCollection()->transform(function ($article) {
+                $article->thumbnail_url = $article->thumbnail_url
+                    ? asset(Storage::url($article->thumbnail_url))
+                    : null;
+                return $article;
+            });
+
+            return $this->successResponse($articles, "Lấy chi tiết bài viết thành công");
         } catch (\Throwable $th) {
             return $this->errorResponse("Lấy chi tiết bài viết thất bại", $th->getMessage());
         }

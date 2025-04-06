@@ -45,7 +45,20 @@ class ArticleCategoryController extends Controller
             'position' => 'nullable|integer|min:1',
             'description' => 'nullable|string',
             'status' => 'nullable|boolean',
+        ], [
+            'required' => ':attribute không được để trống.',
+            'string' => ':attribute phải là chuỗi ký tự.',
+            'max' => ':attribute không được vượt quá :max ký tự.',
+            'integer' => ':attribute phải là số nguyên.',
+            'min' => ':attribute phải lớn hơn hoặc bằng :min.',
+            'boolean' => ':attribute phải là đúng hoặc sai.',
+        ], [
+            'name' => 'Tên',
+            'position' => 'Vị trí',
+            'description' => 'Mô tả',
+            'status' => 'Trạng thái',
         ]);
+
 
         // Lấy số thứ tự cao nhất nếu không có position
         $maxPosition = ArticleCategory::max('position');
@@ -93,7 +106,19 @@ class ArticleCategoryController extends Controller
             'position' => 'nullable|integer|min:1',
             'description' => 'nullable|string',
             'status' => 'nullable|boolean',
+        ], [
+            'name.required' => 'Tên không được để trống.',
+            'name.string' => 'Tên phải là chuỗi ký tự.',
+            'name.max' => 'Tên không được vượt quá 50 ký tự.',
+
+            'position.integer' => 'Vị trí phải là số nguyên.',
+            'position.min' => 'Vị trí phải lớn hơn hoặc bằng 1.',
+
+            'description.string' => 'Mô tả phải là chuỗi ký tự.',
+
+            'status.boolean' => 'Trạng thái phải là đúng hoặc sai.',
         ]);
+
 
         // Lấy vị trí hiện tại của danh mục
         $oldPosition = $articleCategory->position;
@@ -131,7 +156,17 @@ class ArticleCategoryController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        $category = ArticleCategory::find($id);
+
+        $isHaveArticle = Article::where('article_category_id', $category->id)->first();
+
+        if ($isHaveArticle) {
+            return back()->with('error', 'Không thể xóa do đã có bài viết trong danh mục này.');
+        }
+
+        $category->delete();
+
+        return back()->with('success', 'Xóa danh mục bài viết thành công.');
     }
 
     public function toggleStatus(string $id)

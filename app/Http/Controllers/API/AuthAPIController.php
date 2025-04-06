@@ -11,6 +11,11 @@ use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Auth\Events\Registered;
+use App\Mail\VerifyEmail;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Str;
+
 
 class AuthAPIController extends Controller
 {
@@ -129,10 +134,17 @@ class AuthAPIController extends Controller
     public function register(UserRequest $request)
     {
         try {
-            $user = User::create($request->validated()); // Chỉ lấy dữ liệu hợp lệ từ request
+            $verificationToken = Str::random(40);
+            $user = User::create([
+                ...$request->validated(),
+                'remember_token' => $verificationToken
+            ]); // Chỉ lấy dữ liệu hợp lệ từ request
+
+
             $user->syncRoles('user');
             $token = $user->createToken('auth_token')->plainTextToken;
 
+            Mail::to($user->email)->send(new VerifyEmail($verificationToken));
             return response()->json([
                 'message' => 'Đăng ký thành công',
                 'access_token' => $token,
@@ -162,7 +174,20 @@ class AuthAPIController extends Controller
         }
     }
 
+    public function verifyEmail(Request $request)
+    {
+        $user = User::where('remember_token', $request->token)->first();
 
+        if (!$user) {
+            return response()->json(['message' => 'Token không hợp lệ.'], 400);
+        }
+
+        $user->email_verified_at = now();
+        $user->remember_token = null;
+        $user->save();
+
+        return response()->json(['message' => 'Xác thực email thành công!']);
+    }
 
 
     /**
@@ -192,43 +217,5 @@ class AuthAPIController extends Controller
                 'errors' => $th->getMessage()
             ], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
-    }
-
-    public function forgotPassword(Request $request)
-    {
-        $validated = $request->validate([
-            'email' => 'required|email|exists:users,email',
-        ]);
-
-        $status = Password::sendResetLink(['email' => $validated['email']]);
-
-        if ($status === Password::RESET_LINK_SENT) {
-            return response()->json(['message' => 'Vui lòng kiểm tra email của bạn!']);
-        }
-
-        throw ValidationException::withMessages(['email' => 'Gửi email thất bại!']);
-    }
-
-    public function resetPassword(Request $request)
-    {
-        $validated = $request->validate([
-            'token' => 'required',
-            'email' => 'required|email|exists:users,email',
-            'password' => 'required|min:6|confirmed',
-        ]);
-
-        $status = Password::reset(
-            $validated,
-            function ($user, $password) {
-                $user->password = bcrypt($password);
-                $user->save();
-            }
-        );
-
-        if ($status === Password::PASSWORD_RESET) {
-            return response()->json(['message' => 'Mật khẩu đã được cập nhật!']);
-        }
-
-        throw ValidationException::withMessages(['email' => 'Token không hợp lệ!']);
     }
 }

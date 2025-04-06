@@ -70,7 +70,22 @@ class UserAPIController extends Controller
         }
     }
 
+    public function getUser(string $id)
+    {
+        $user = User::find($id);
 
+        if (!$user) {
+            return response()->json([
+                'message' => 'Fetch user failed',
+            ], Response::HTTP_BAD_REQUEST);
+        }
+
+        $user->avatar = $user->avatar ? asset(Storage::url($user->avatar)) : null;
+        return response()->json([
+            'message' => 'Fetch user successfully',
+            'data' => $user
+        ], Response::HTTP_OK);
+    }
 
     /**
      * @OA\Put(

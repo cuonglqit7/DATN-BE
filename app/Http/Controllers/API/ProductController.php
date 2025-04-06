@@ -89,10 +89,40 @@ class ProductController extends Controller
     {
         try {
             $limit = is_numeric($request->limit) ? (int) $request->limit : 8;
+            $search = $request->input('q');
+            $categoryId = $request->input('category_id');
+            $minPrice = $request->input('min_price');
+            $maxPrice = $request->input('max_price');
 
-            $query = Product::with('avatar', 'category', 'attributes');
+            $query = Product::with('avatar', 'category', 'attributes')->withAvg('productReviews', 'rating');
 
-            // Phân trang
+            // Tìm kiếm theo tên hoặc mô tả
+            if (!empty($search)) {
+                $query->where(function ($q) use ($search) {
+                    $q->where('product_name', 'LIKE', "%{$search}%")
+                        ->orWhere('description', 'LIKE', "%{$search}%");
+                });
+            }
+
+            if (!empty($categoryId)) {
+                Log::info('categoryId received:', ['categoryId' => $categoryId]);
+                $categoryArray = is_array($categoryId) ? $categoryId : explode(',', $categoryId);
+                $categoryArray = array_filter(array_unique(array_map('trim', $categoryArray)));
+                if (!empty($categoryArray)) {
+                    $query->whereIn('category_id', $categoryArray);
+                }
+            }
+
+            // Lọc theo khoảng giá
+            if (!empty($minPrice) && !empty($maxPrice)) {
+                $query->whereBetween('price', [$minPrice, $maxPrice]);
+            } elseif (!empty($minPrice)) {
+                $query->where('price', '>=', $minPrice);
+            } elseif (!empty($maxPrice)) {
+                $query->where('price', '<=', $maxPrice);
+            }
+
+            // Phân trang & sắp xếp
             $products = $query->orderBy('created_at', 'DESC')->paginate($limit);
 
             // Thêm full URL cho avatar
@@ -106,6 +136,8 @@ class ProductController extends Controller
             return $this->errorResponse("Lấy danh sách sản phẩm thất bại", $th->getMessage());
         }
     }
+
+
 
     /**
      * @OA\Get(
@@ -155,6 +187,7 @@ class ProductController extends Controller
     public function show($slug)
     {
         $product = Product::with('category', 'images', 'attributes', 'productReviews')
+            ->withAvg('productReviews', 'rating')
             ->where('slug', $slug)
             ->first();
 
@@ -167,6 +200,7 @@ class ProductController extends Controller
             $image->url = url('storage/' . $image->image_url); // hoặc Storage::url($image->path)
             return $image;
         });
+
 
         return response()->json($product, 200);
     }
@@ -191,15 +225,15 @@ class ProductController extends Controller
     public function getBestSellingProducts()
     {
         try {
-            $oneWeekAgo = now()->subWeek(); // Lấy thời điểm một tuần trước
+            $oneWeekAgo = now()->subWeek();
 
             $products = Product::with('avatar', 'category', 'attributes')
+                ->withAvg('productReviews', 'rating')
                 ->where('best_selling', true)
-                ->whereBetween('updated_at', [$oneWeekAgo, now()]) // Lọc theo thời gian cập nhật trong tuần qua
+                ->whereBetween('updated_at', [$oneWeekAgo, now()])
                 ->orderBy('quantity_sold', 'DESC')
                 ->limit(8)->get();
 
-            // Gắn full URL cho avatar
             $products->transform(function ($product) {
                 $product->avatar_url = $product->avatar ? asset(Storage::url($product->avatar->image_url)) : null;
                 return $product;

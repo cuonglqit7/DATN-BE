@@ -22,9 +22,12 @@
     <div id="app">
         <nav class="navbar navbar-expand-md navbar-light bg-white shadow-sm">
             <div class="container">
-                <a class="navbar-brand" href="{{ url('/') }}">
-                    {{ config('app.name', 'Laravel') }}
-                </a>
+                <div class="flex items-center gap-2">
+                    <img src="/logo.png" class="rounded-full" width="30" height="30" alt="">
+                    <a class="navbar-brand btn" href="{{ url('/') }}">
+                        {{ config('app.name', 'Laravel') }} - CMS Quản trị
+                    </a>
+                </div>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
                     data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent"
                     aria-expanded="false" aria-label="{{ __('Toggle navigation') }}">

@@ -133,7 +133,8 @@
                     <th class="p-2">
                         <input type="checkbox" id="selectAll">
                     </th>
-                    <th class="p-2 max-w-24">Tên sản phẩm</th>
+                    <th class="p-2 text-center">Hình</th>
+                    <th class="p-2">Tên sản phẩm</th>
                     <th class="p-2 ps-3">Giá cả</th>
                     <th class="p-2">Danh mục</th>
                     <th class="p-2">Tồn kho</th>
@@ -152,7 +153,19 @@
                             <input type="checkbox" name="product_ids[]" value="{{ $product->id }}"
                                 class="accent-blue-500 product-checkbox">
                         </td>
-                        <td class="p-1 max-w-24 overflow-hidden text-ellipsis whitespace-nowrap">
+                        <td class="p-2 w-[60px] text-center">
+                            @if($product->images->isNotEmpty())
+                                @foreach ($product->images as $item)
+                                    
+                                    @if ($item->is_primary == true)
+                                    <img src="{{ asset('storage/'.$item->image_url) }}" alt="{{ $product->product_name }}" class="w-[60px] h-[60px] object-cover rounded">
+                                    @endif
+                                @endforeach
+                            @else
+                                <p>Không có hình ảnh</p>
+                            @endif
+                        </td>
+                        <td class="p-1 overflow-hidden text-ellipsis whitespace-nowrap">
                             <a href="{{ route('products.show', $product->slug) }}" title="{{ $product->product_name }}"
                                 class="font-semibold text-blue-600 hover:underline">{{ $product->product_name }}</a>
                         </td>
@@ -228,16 +241,27 @@
                         </td>
 
                         <td class="p-1 text-center">
-                            <a href="{{ route('products.edit', $product->id) }}" title="Chỉnh sửa"
-                                class="flex justify-center items-center">
-                                <svg class="w-6 h-6 text-yellow-600 hover:text-yellow-500 dark:text-white"
-                                    aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24"
-                                    fill="none" viewBox="0 0 24 24">
-                                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
-                                        stroke-width="2"
-                                        d="m14.304 4.844 2.852 2.852M7 7H4a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h11a1 1 0 0 0 1-1v-4.5m2.409-9.91a2.017 2.017 0 0 1 0 2.853l-6.844 6.844L8 14l.713-3.565 6.844-6.844a2.015 2.015 0 0 1 2.852 0Z" />
-                                </svg>
-                            </a>
+                            <div class="flex justify-center gap-2">
+                                <a href="{{ route('products.edit', $product->id) }}" title="Chỉnh sửa"
+                                    class="flex justify-center items-center">
+                                    <svg class="w-6 h-6 text-yellow-600 hover:text-yellow-500 dark:text-white"
+                                        aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                                        fill="none" viewBox="0 0 24 24">
+                                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
+                                            stroke-width="2"
+                                            d="m14.304 4.844 2.852 2.852M7 7H4a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h11a1 1 0 0 0 1-1v-4.5m2.409-9.91a2.017 2.017 0 0 1 0 2.853l-6.844 6.844L8 14l.713-3.565 6.844-6.844a2.015 2.015 0 0 1 2.852 0Z" />
+                                    </svg>
+                                </a>
+                                <form action="{{ route('products.destroy', $product->id) }}" method="POST" onsubmit="return confirm('Bạn có chắc chắn muốn xóa sản phẩm này?');">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" class="flex justify-center items-center">
+                                        <svg class="w-6 h-6 text-gray-800 hover:text-red-500 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 7h14m-9 3v8m4-8v8M10 3h4a1 1 0 0 1 1 1v3H9V4a1 1 0 0 1 1-1ZM6 7h12v13a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V7Z"/>
+                                        </svg>
+                                    </button>
+                                </form>                                
+                            </div>
                         </td>
                 @endforeach
             </tbody>

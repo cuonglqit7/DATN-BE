@@ -19,9 +19,13 @@ class UserController extends Controller
             ->when($request->email, function ($query) use ($request) {
                 $query->where('email', 'like', '%' . $request->email . '%');
             })
+            ->withCount(['orders' => function ($query) {
+                $query->where('status', 'Completed');
+            }])
             ->role('user')
             ->orderBy('id', 'DESC')
             ->paginate($numperpage);
+
         return view('users.index', compact('users', 'numperpage'));
     }
 
@@ -39,22 +43,22 @@ class UserController extends Controller
      */
     public function store(Request $request)
     {
-        $request->validate([
-            'name' => 'required',
-            'email' => 'required|email',
-            'password' => 'required',
-            'repeat_password' => 'required|same:password'
-        ]);
+        // $request->validate([
+        //     'name' => 'required',
+        //     'email' => 'required|email',
+        //     'password' => 'required',
+        //     'repeat_password' => 'required|same:password'
+        // ]);
 
-        $user = User::create([
-            'name' => $request->name,
-            'email' => $request->email,
-            'password' => Hash::make($request->password)
-        ]);
+        // $user = User::create([
+        //     'name' => $request->name,
+        //     'email' => $request->email,
+        //     'password' => Hash::make($request->password)
+        // ]);
 
-        $user->syncRoles($request->roles);
+        // $user->syncRoles($request->roles);
 
-        return redirect()->route('users.index')->with('success', 'Người dùng đã được thêm thành công!');
+        // return redirect()->route('users.index')->with('success', 'Người dùng đã được thêm thành công!');
     }
 
     /**
@@ -71,9 +75,9 @@ class UserController extends Controller
      */
     public function edit(string $id)
     {
-        $user = User::find($id);
-        $roles = Role::all();
-        return view('users.edit', compact('user', 'roles'));
+        // $user = User::find($id);
+        // $roles = Role::all();
+        // return view('users.edit', compact('user', 'roles'));
     }
 
     /**
@@ -81,21 +85,21 @@ class UserController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        $request->validate([
-            'name' => 'required',
-            'email' => 'required|email',
-            'password' => 'required',
-            'repeat_password' => 'required|same:password'
-        ]);
+        // $request->validate([
+        //     'name' => 'required',
+        //     'email' => 'required|email',
+        //     'password' => 'required',
+        //     'repeat_password' => 'required|same:password'
+        // ]);
 
-        $user = User::find($id);
+        // $user = User::find($id);
 
-        $user->name = $request->name;
-        $user->email = $request->email;
-        $user->password =  Hash::make($request->password);
-        $user->save();
-        $user->syncRoles($request->roles);
-        return redirect()->route('users.index')->with('success', 'Người dùng đã được chỉnh sửa thành công!');
+        // $user->name = $request->name;
+        // $user->email = $request->email;
+        // $user->password =  Hash::make($request->password);
+        // $user->save();
+        // $user->syncRoles($request->roles);
+        // return redirect()->route('users.index')->with('success', 'Người dùng đã được chỉnh sửa thành công!');
     }
 
     /**

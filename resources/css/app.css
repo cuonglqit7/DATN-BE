@@ -1,7 +1,10 @@
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+body {
+    zoom: 0.9;
+}
 
 /* Giảm kích thước icon */
 .toast-success::before,
@@ -15,7 +18,6 @@
 .toast-message {
     font-size: 12px !important; /* Giảm kích thước chữ */
 }
-
 
 .ck-content {
     font-size: 1rem;

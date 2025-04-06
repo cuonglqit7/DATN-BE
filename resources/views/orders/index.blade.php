@@ -84,8 +84,8 @@
                     <th class="p-1">Tài khoản</th>
                     <th class="p-1">Ngày đặt</th>
                     <th class="p-1 text-left">Tổng tiền</th>
-                    <th class="p-2 text-left">Khách hàng nhận</th>
-                    <th class="p-2 text-left">Ghi chú</th>
+                    <th class="p-2 text-left">Phương thức thanh toán</th>
+                    <th class="p-2 text-left">Trạng thái thanh toán</th>
                     <th class="p-2 text-center">Hành động</th>
                 </tr>
             </thead>
@@ -95,7 +95,7 @@
                         <td class="p-2 max-w-[300px]">
                             <a href="{{ route('orders.show', $item->id) }}"
                                 class="font-semibold text-blue-600 hover:underline"
-                                title="Xem chi tiết đơn hàng {{ $item->code }}">
+                                title="Xem chi tiết đơn hàng #{{ $item->code }}">
                                 #{{ $item->code }}
                             </a>
                         </td>
@@ -110,10 +110,31 @@
                             {{ number_format($item->total_price, 0) }} đ
                         </td>
                         <td class="p-2 text-left">
-                            {{ $item->recipient_name }}
+                            @if ($item->payment_method == 'cod')
+                                Thanh toán khi nhận hàng
+                            @elseif ($item->payment_method == 'momo')
+                                Chuyển khoản MOMO
+                            @else
+                                Chuyển khoản ngân hàng
+                            @endif
                         </td>
                         <td class="p-2 text-left">
-                            {{ $item->user_note }}
+                            @if ($item->payment_status == 'Pending')
+                                        <span
+                                            class="px-3 py-1 text-xs font-semibold rounded-full bg-yellow-100 text-yellow-800">Chờ
+                                            xử lý</span>
+                                    @elseif ($item->payment_status == 'Completed')
+                                        <span
+                                            class="px-3 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800">Hoàn
+                                            tất</span>
+                                    @elseif ($item->payment_status == 'Failed')
+                                        <span
+                                            class="px-3 py-1 text-xs font-semibold rounded-full bg-red-100 text-red-800">Đã
+                                            hủy</span>
+                                            @elseif ($item->payment_status == 'Refunded')
+                                            <span
+                                                class="px-3 py-1 text-xs font-semibold rounded-full bg-red-100 text-red-800">Thanh toán thất bại</span>
+                                    @endif
                         </td>
                         <td class="p-1 flex justify-center gap-1">
                             <div class="max-w-sm mx-auto bg-white p-4 text-center">
@@ -148,32 +169,34 @@
                                     @else
                                         <button
                                             class="px-3 py-1 text-xs bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition"
-                                            onclick="document.getElementById('updateModal').classList.remove('hidden')">
+                                            onclick="openModal({{ $item->id }})">
                                             Cập nhật
                                         </button>
                                     @endif
                                 </div>
                             </div>
 
-                            <!-- Modal cập nhật -->
-                            <div id="updateModal"
-                                class="hidden fixed inset-0 bg-gray-900 bg-opacity-50 flex justify-center items-center">
-                                <div class="bg-white p-5 rounded-lg shadow-lg max-w-sm w-full">
-                                    <h3 class="text-lg font-semibold">Cập nhật trạng thái</h3>
+                            <div id="updateModal-{{ $item->id }}" class=" hidden fixed inset-0 z-30 bg-black/50 flex items-center justify-center">
+                                <div class="bg-white p-6 rounded-xl shadow-2xl w-full max-w-md">
+                                    <h3 class="text-xl font-bold text-gray-800">Cập nhật trạng thái</h3>
                                     <form action="{{ route('orders.update', $item->id) }}" method="POST">
                                         @csrf
                                         @method('PUT')
-                                        <select class="w-full border-gray-300 rounded-md shadow-sm p-2 mt-2" name="status">
+                                        <select class="w-full mt-3 p-2 border rounded-lg focus:ring focus:ring-blue-300 outline-none" name="status">
                                             <option value="Confirm">Xác nhận</option>
                                             <option value="Delivering">Đang giao hàng</option>
                                             <option value="Completed">Hoàn thành</option>
                                             <option value="Cancelled">Đã hủy</option>
                                         </select>
-                                        <div class="mt-3 flex justify-end gap-2">
-                                            <button type="reset" class="px-3 py-1 bg-gray-300 text-gray-700 rounded-lg"
-                                                onclick="document.getElementById('updateModal').classList.add('hidden')">Hủy</button>
+                                        <div class="mt-4 flex justify-end gap-3">
+                                            <button type="button" onclick="closeModal({{ $item->id }})"
+                                                class="px-4 py-2 text-gray-700 bg-gray-200 rounded-lg hover:bg-gray-300 transition">
+                                                Hủy
+                                            </button>
                                             <button type="submit"
-                                                class="px-3 py-1 bg-blue-500 text-white rounded-lg hover:bg-blue-600">Lưu</button>
+                                                class="px-4 py-2 text-white bg-blue-500 rounded-lg hover:bg-blue-600 transition">
+                                                Lưu
+                                            </button>
                                         </div>
                                     </form>
                                 </div>
@@ -191,5 +214,14 @@
     </div>
 @endsection
 @push('scripts')
+<script>
+    function openModal(id) {
+            document.getElementById(`updateModal-${id}`).classList.remove('hidden');
+        }
+
+        function closeModal(id) {
+            document.getElementById(`updateModal-${id}`).classList.add('hidden');
+        }
+</script>
     <x-toastr />
 @endpush

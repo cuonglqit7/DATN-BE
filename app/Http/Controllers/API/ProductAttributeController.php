@@ -59,16 +59,7 @@ class ProductAttributeController extends Controller
                 ->selectRaw('COUNT(product_id) as product_count')
                 ->groupBy('attribute_name', 'attribute_value')
                 ->orderBy('attribute_name', 'ASC')
-                ->get()
-                ->groupBy('attribute_name')
-                ->map(function ($group) {
-                    return $group->map(function ($item) {
-                        return [
-                            'value' => $item->attribute_value,
-                            'count' => $item->product_count
-                        ];
-                    })->values();
-                });
+                ->get();
 
             if ($attributes->isEmpty()) {
                 return response()->json([
@@ -77,7 +68,7 @@ class ProductAttributeController extends Controller
             }
 
             return response()->json([
-                'message' => 'Lấy tất cả thuộc tính',
+                'message' => 'Lấy tất cả thuộc tính thành công',
                 'data' => $attributes,
             ]);
         } catch (\Throwable $th) {
