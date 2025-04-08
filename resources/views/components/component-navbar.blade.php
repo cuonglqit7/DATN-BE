@@ -77,8 +77,7 @@
                 Bài viết
             </a>
 
-            <!-- Bài viết -->
-            <a href="{{ route('articles.index') }}"
+            <a href="{{ route('banners.index') }}"
                 class="flex items-center px-3 py-2 rounded text-sm transition-all duration-200 gap-2
                        {{ $active === 'banner' ? 'bg-blue-100' : 'hover:bg-gray-200' }}">
                 <svg class="w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"

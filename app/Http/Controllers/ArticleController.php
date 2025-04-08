@@ -50,7 +50,22 @@ class ArticleController extends Controller
             'selected_product' => 'nullable|exists:products,id',
             'status' => 'boolean',
             'articleCategories' => 'required|exists:article_categories,id',
+        ], [
+            'required' => ':attribute không được để trống.',
+            'string' => ':attribute phải là chuỗi ký tự.',
+            'max' => ':attribute không được vượt quá :max ký tự.',
+            'boolean' => ':attribute phải là đúng hoặc sai.',
+            'exists' => ':attribute không hợp lệ.',
+        ], [
+            'title' => 'Tiêu đề',
+            'thumbnail' => 'Ảnh đại diện',
+            'short_description' => 'Mô tả ngắn',
+            'content' => 'Nội dung',
+            'selected_product' => 'Sản phẩm liên kết',
+            'status' => 'Trạng thái',
+            'articleCategories' => 'Danh mục bài viết',
         ]);
+
 
         $image = $request->file('thumbnail');
         $path = $image->store('articles/thumbnail', 'public');
@@ -102,7 +117,22 @@ class ArticleController extends Controller
             'selected_product' => 'nullable|exists:products,id',
             'status' => 'boolean',
             'articleCategories' => 'required|exists:article_categories,id',
+        ], [
+            'required' => ':attribute không được để trống.',
+            'string' => ':attribute phải là chuỗi ký tự.',
+            'max' => ':attribute không được vượt quá :max ký tự.',
+            'boolean' => ':attribute phải là đúng hoặc sai.',
+            'exists' => ':attribute không hợp lệ.',
+        ], [
+            'title' => 'Tiêu đề',
+            'thumbnail' => 'Ảnh đại diện',
+            'short_description' => 'Mô tả ngắn',
+            'content' => 'Nội dung',
+            'selected_product' => 'Sản phẩm liên kết',
+            'status' => 'Trạng thái',
+            'articleCategories' => 'Danh mục bài viết',
         ]);
+
 
         $article = Article::find($id);
 

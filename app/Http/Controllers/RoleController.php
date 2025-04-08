@@ -47,7 +47,10 @@ class RoleController extends Controller
     {
         $request->validate([
             'name' => 'required',
+        ], [
+            'name.required' => 'Tên không được để trống.',
         ]);
+
 
         $role = Role::create(['name' => $request->name]);
 
@@ -81,7 +84,12 @@ class RoleController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        $request->validate(['name' => 'required']);
+        $request->validate([
+            'name' => 'required',
+        ], [
+            'name.required' => 'Tên không được để trống.',
+        ]);
+
         $role = Role::find($id);
         $role->name = $request->name;
         $role->save();

@@ -2,7 +2,7 @@
 
 use App\Http\Controllers\ArticleCategoryController;
 use App\Http\Controllers\ArticleController;
-use App\Http\Controllers\Auth\LoginController;
+use App\Http\Controllers\BannerController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ProductImageController;
@@ -11,9 +11,8 @@ use App\Http\Controllers\RoleController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
-use Illuminate\Support\Facades\Log;
-use App\Http\Controllers\ArticleImageController;
 use App\Http\Controllers\DiscountController;
+use App\Http\Controllers\HomeController;
 use App\Http\Controllers\OrderController;
 
 Auth::routes(['register' => false]);
@@ -21,7 +20,7 @@ Auth::routes(['register' => false]);
 Route::middleware('auth')->group(function () {
 
     //dashboard
-    Route::get('/', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
+    Route::get('/', [HomeController::class, 'index'])->name('home');
 
     //khách hàng
     Route::resource('users', UserController::class);
@@ -33,6 +32,7 @@ Route::middleware('auth')->group(function () {
     Route::resource('products', ProductController::class)->parameters([
         'products' => 'product:slug'
     ]);
+
     Route::patch('/products/{id}/toggle-status', [ProductController::class, 'toggleStatus'])->name('products.toggleStatus');
     Route::patch('/products/{id}/toggle-featured', [ProductController::class, 'toggleFeatured'])->name('products.toggleFeatured');
     Route::patch('/products/{id}/toggle-best-selling', [ProductController::class, 'toggleBestSelling'])->name('products.toggleBestSelling');
@@ -52,6 +52,11 @@ Route::middleware('auth')->group(function () {
         'categories' => 'category:slug'
     ]);
     Route::patch('/categories/{id}/toggle-status', [CategoryController::class, 'toggleStatus'])->name('categories.toggleStatus');
+    Route::post('/categories/toggle-on', [CategoryController::class, 'toggleOn'])->name('categories.toggleOn');
+    Route::post('/categories/toggle-off', [CategoryController::class, 'toggleOff'])->name('categories.toggleOff');
+    Route::post('/categories/{id}/update-position', [CategoryController::class, 'updatePosition'])
+        ->name('categories.updatePosition');
+
 
     //đánh giá sản phẩm
     Route::prefix('reviews')->group(function () {
@@ -70,7 +75,7 @@ Route::middleware('auth')->group(function () {
     Route::patch('/articleCategories/{id}/toggle-status', [ArticleCategoryController::class, 'toggleStatus'])->name('articleCategories.toggleStatus');
     Route::post('/articleCategories/toggle-on', [ArticleCategoryController::class, 'toggleOn'])->name('articleCategories.toggleOn');
     Route::post('/articleCategories/toggle-off', [ArticleCategoryController::class, 'toggleOff'])->name('articleCategories.toggleOff');
-    Route::post('/categories/{id}/update-position', [ArticleCategoryController::class, 'updatePosition'])
+    Route::post('/articleCategories/{id}/update-position', [ArticleCategoryController::class, 'updatePosition'])
         ->name('articleCategories.updatePosition');
 
     //Bài viết
@@ -91,4 +96,13 @@ Route::middleware('auth')->group(function () {
 
     //Đơn hàng
     Route::resource('orders', OrderController::class);
+
+    //banner
+    Route::resource('banners', BannerController::class);
+    Route::patch('banners/{banner}/toggle', [BannerController::class, 'toggleStatus'])->name('banners.toggleStatus');
+    Route::post('/banners/{id}/update-position', [BannerController::class, 'updatePosition'])
+        ->name('banners.updatePosition');
+
+    Route::post('/banners/toggle-on', [BannerController::class, 'toggleOn'])->name('banners.toggleOn');
+    Route::post('/banners/toggle-off', [BannerController::class, 'toggleOff'])->name('banners.toggleOff');
 });

@@ -74,9 +74,7 @@
                     class="bg-blue-500 text-white px-3 py-2 rounded-md shadow-sm hover:bg-blue-600 transition">Tìm</button>
                 <a href="{{ route('users.index') }}"
                     class="bg-gray-400 text-white px-3 py-2 rounded-md shadow-sm hover:bg-gray-500 transition">Xóa lọc</a>
-                <a href="{{ route('users.create') }}"
-                    class="bg-green-500 text-white px-3 py-2 rounded-md shadow-sm hover:bg-green-600 transition">Thêm
-                    mới</a>
+               
             </form>
         </div>
 
@@ -90,7 +88,7 @@
                     <th class="p-1">Email</th>
                     <th class="p-1">Xác thực mail</th>
                     <th class="p-1">Thông tin chung</th>
-                    <th class="p-1">Địa chỉ</th>
+                    <th class="p-1">Đã mua</th>
                     <th class="p-1">Trạng thái</th>
                     <th class="p-2 text-center">Hành động</th>
                 </tr>
@@ -113,15 +111,22 @@
                             {{ $item->email }}
                         </td>
                         <td class="p-1">
-                            {{ $item->email_verified_at ?? 'Chưa xác thực' }}
+                            @if ($item->email_verified_at == null)
+                                <p class="text-red-600">Chưa xác thực</p>
+                            @else
+                                <p class="text-red-600">{{$item->email_verified_at}}</p>
+                            @endif
                         </td>
                         <td class="p-1">
                             <p>Ngày sinh: {{ $item->dob ?? 'Chưa có' }}</p>
                             <p>Số điện thoại: {{ $item->phone ?? 'Chưa có' }}</p>
                             <p>Giới tính: {{ $item->gender ?? 'Chưa có' }}</p>
+                            <p class="line-clamp-2">{{ $item->address ?? 'Chưa có' }}</p>
                         </td>
                         <td class="p-1 max-w-[500px]">
-                            <p class="line-clamp-2">{{ $item->address ?? 'Chưa có' }}</p>
+                            <p class="text-amber-600">
+                                {{$item->orders_count ?? 0}} đơn hàng
+                            </p>
                         </td>
                         <td class="p-1 text-center">
                             <form action="{{ route('users.toggleStatus', $item->id) }}" method="POST">

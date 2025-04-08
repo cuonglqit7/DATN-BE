@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\Category;
 use App\Models\Discount;
+use App\Models\Order;
+use App\Models\OrderItem;
 use App\Models\Product;
 use App\Models\ProductAttribute;
 use App\Models\ProductDiscount;
@@ -33,10 +35,11 @@ class ProductController extends Controller
             ->when($request->product_name, function ($query) use ($request) {
                 $query->where('product_name', 'like', '%' . $request->product_name . '%');
             })
-            ->with('productReviews')
+            ->with('productReviews', 'images')
             ->withAvg('productReviews', 'rating')
             ->orderBy('created_at', 'DESC')
             ->paginate($numperpage);
+
 
         $notifications = [];
         foreach ($products as $product) {
@@ -62,32 +65,71 @@ class ProductController extends Controller
     public function store(Request $request)
     {
         // dd($request->all());
-        $validator = Validator::make($request->all(), [
-            'product_name'  => 'required|string|max:100',
-            'price'         => 'required|numeric|min:0',
-            'promotion_price' => 'nullable|numeric|min:0',
-            'quantity_in_stock' => 'required|numeric|min:0',
-            'category'       => 'required',
-            'best_selling' => 'required|boolean',
-            'featured' => 'required|boolean',
-            'attribute_names' => 'required|array',
-            'attribute_values' => 'required|array',
-            'description'    => 'nullable|string',
-            'status'         => 'required|boolean',
-            'images'         => 'required|array',
-            'images.*'       => 'image|mimes:jpeg,png,jpg,gif,svg|max:2048'
-        ])->after(function ($validator) use ($request) {
+        $validator = Validator::make(
+            $request->all(),
+            [
+                'product_name'  => 'required|string|max:100',
+                'price'         => 'required|numeric|min:0',
+                'promotion_price' => 'nullable|numeric|min:0',
+                'quantity_in_stock' => 'required|numeric|min:0',
+                'category'       => 'required',
+                'best_selling' => 'required|boolean',
+                'featured' => 'required|boolean',
+                'attribute_names' => 'required|array',
+                'attribute_values' => 'required|array',
+                'description'    => 'nullable|string',
+                'status'         => 'required|boolean',
+                'images'         => 'required|array',
+                'images.*'       => 'image|mimes:jpeg,png,jpg,gif,svg|max:2048'
+            ],
+            [
+                'product_name.required' => 'Tên sản phẩm không được bỏ trống.',
+                'product_name.string' => 'Tên sản phẩm phải là một chuỗi ký tự.',
+                'product_name.max' => 'Tên sản phẩm không được vượt quá 100 ký tự.',
+
+                'price.required' => 'Giá sản phẩm không được bỏ trống.',
+                'price.numeric' => 'Giá sản phẩm phải là một số.',
+                'price.min' => 'Giá sản phẩm không được nhỏ hơn 0.',
+
+                'promotion_price.numeric' => 'Giá khuyến mãi phải là một số.',
+                'promotion_price.min' => 'Giá khuyến mãi không được nhỏ hơn 0.',
+
+                'quantity_in_stock.required' => 'Số lượng trong kho không được bỏ trống.',
+                'quantity_in_stock.numeric' => 'Số lượng trong kho phải là một số.',
+                'quantity_in_stock.min' => 'Số lượng trong kho không được nhỏ hơn 0.',
+
+                'category.required' => 'Danh mục sản phẩm không được bỏ trống.',
+
+                'best_selling.required' => 'Trường sản phẩm bán chạy không được bỏ trống.',
+                'best_selling.boolean' => 'Giá trị của sản phẩm bán chạy phải là đúng hoặc sai.',
+
+                'featured.required' => 'Trường sản phẩm nổi bật không được bỏ trống.',
+                'featured.boolean' => 'Giá trị của sản phẩm nổi bật phải là đúng hoặc sai.',
+
+                'attribute_names.required' => 'Tên thuộc tính không được bỏ trống.',
+                'attribute_names.array' => 'Tên thuộc tính phải là một mảng.',
+
+                'attribute_values.required' => 'Giá trị thuộc tính không được bỏ trống.',
+                'attribute_values.array' => 'Giá trị thuộc tính phải là một mảng.',
+
+                'description.string' => 'Mô tả sản phẩm phải là một chuỗi ký tự.',
+
+                'status.required' => 'Trạng thái sản phẩm không được bỏ trống.',
+                'status.boolean' => 'Trạng thái sản phẩm phải là đúng hoặc sai.',
+
+                'images.required' => 'Hình ảnh sản phẩm không được bỏ trống.',
+                'images.array' => 'Hình ảnh sản phẩm phải là một mảng.',
+                'images.*.image' => 'Tệp tải lên phải là hình ảnh.',
+                'images.*.mimes' => 'Hình ảnh phải có định dạng jpeg, png, jpg, gif hoặc svg.',
+                'images.*.max' => 'Hình ảnh không được vượt quá 2048KB.'
+            ]
+        )->after(function ($validator) use ($request) {
             if ($request->filled('promotion_price') && $request->promotion_price >= $request->price) {
                 $validator->errors()->add('promotion_price', 'Giá khuyến mãi phải nhỏ hơn giá gốc.');
             }
         });
 
-        if ($validator->fails()) {
-            return redirect()->back()
-                ->withErrors($validator)
-                ->withInput();
-        }
-
+        // dd('adsadads');
         $product = Product::create([
             'product_name' => $request->product_name,
             'slug' => Str::slug($request->product_name),
@@ -160,7 +202,6 @@ class ProductController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        // dd($request->all());
         $validator = Validator::make($request->all(), [
             'product_name'   => 'required|string|max:255',
             'price'          => 'required|numeric|min:0',
@@ -177,17 +218,21 @@ class ProductController extends Controller
             'old_images' => 'array',
             'is_primary' => 'nullable|exists:product_images,id',
             'images.*'       => 'image|mimes:jpeg,png,jpg,gif,svg|max:2048'
+        ], [
+            'required' => ':attribute không được để trống.',
+            'string' => ':attribute phải là chuỗi ký tự.',
+            'numeric' => ':attribute phải là số.',
+            'min' => ':attribute phải có giá trị tối thiểu là :min.',
+            'boolean' => ':attribute phải là đúng hoặc sai.',
+            'image' => ':attribute phải là một hình ảnh.',
+            'mimes' => ':attribute phải có định dạng: jpeg, png, jpg, gif, svg.',
+            'max' => ':attribute không được lớn hơn :max KB.',
+            'exists' => ':attribute không hợp lệ.',
         ])->after(function ($validator) use ($request) {
             if ($request->filled('promotion_price') && $request->promotion_price >= $request->price) {
                 $validator->errors()->add('promotion_price', 'Giá khuyến mãi phải nhỏ hơn giá gốc.');
             }
         });
-
-        if ($validator->fails()) {
-            return redirect()->back()
-                ->withErrors($validator)
-                ->withInput();
-        }
 
         $product = Product::findOrFail($id);
         $product->update([
@@ -278,6 +323,12 @@ class ProductController extends Controller
     public function destroy(string $id)
     {
         $product = Product::find($id);
+
+        $isOrder = OrderItem::where('product_id', $product->id)->first();
+
+        if ($isOrder) {
+            return back()->with('error', 'Không thể xóa sản phẩm do đã có đơn hàng phát sinh!');
+        }
         $product->delete();
         return back()->with('success', 'Đã xóa sản phẩm thành công!');
     }

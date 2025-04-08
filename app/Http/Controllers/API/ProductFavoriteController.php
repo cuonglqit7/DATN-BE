@@ -141,7 +141,7 @@ class ProductFavoriteController extends Controller
 
             $favorites = ProductFavorite::where('user_id', $userId)
                 ->with(['product' => function ($query) {
-                    $query->select('id', 'product_name', 'promotion_price');
+                    $query->select('id', 'slug', 'product_name', 'price', 'promotion_price');
                 }])
                 ->orderBy('created_at', 'desc')
                 ->get();

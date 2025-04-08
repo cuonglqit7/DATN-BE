@@ -84,8 +84,8 @@
                     </th>
                     <th class="p-1">Tên danh mục</th>
                     <th class="p-1">Slug</th>
-                    <th class="p-2 text-center">SL bài viết</th>
-                    <th class="p-2 text-center w-96">Mô tả</th>
+                    <th class="p-2 text-center">Số bài viết</th>
+                    <th class="p-2 w-96">Mô tả</th>
                     <th class="p-2 text-center">Vị trí</th>
                     <th class="p-2 text-left">Trạng thái</th>
                     <th class="p-2 text-center">Hành động</th>
@@ -105,7 +105,7 @@
 
                             <td class="p-1 text-gray-600">{{ $category->slug }}</td>
                             <td class="p-1 text-center">{{ $category->articles_count ?? 0 }} bài viết</td>
-                            <td class="p-1 text-center">{{ $category->description ?? 'Không có' }}</td>
+                            <td class="p-1">{{ $category->description ?? 'Không có' }}</td>
                             <td class="p-1 text-center">
                                 <form method="POST"
                                     action="{{ route('articleCategories.updatePosition', $category->id) }}">
@@ -141,15 +141,26 @@
                             </td>
 
                             <td class="p-1 flex gap-1 justify-center">
-                                <a href="{{ route('articleCategories.edit', $category->id) }}" title="Chỉnh sửa">
-                                    <svg class="w-6 h-6 text-yellow-600 hover:text-yellow-500 dark:text-white"
-                                        aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24"
-                                        height="24" fill="none" viewBox="0 0 24 24">
-                                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
-                                            stroke-width="2"
-                                            d="m14.304 4.844 2.852 2.852M7 7H4a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h11a1 1 0 0 0 1-1v-4.5m2.409-9.91a2.017 2.017 0 0 1 0 2.853l-6.844 6.844L8 14l.713-3.565 6.844-6.844a2.015 2.015 0 0 1 2.852 0Z" />
-                                    </svg>
-                                </a>
+                                <div class="flex justify-center gap-2">
+                                    <a href="{{ route('articleCategories.edit', $category->id) }}" title="Chỉnh sửa">
+                                        <svg class="w-6 h-6 text-yellow-600 hover:text-yellow-500 dark:text-white"
+                                            aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24"
+                                            height="24" fill="none" viewBox="0 0 24 24">
+                                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
+                                                stroke-width="2"
+                                                d="m14.304 4.844 2.852 2.852M7 7H4a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h11a1 1 0 0 0 1-1v-4.5m2.409-9.91a2.017 2.017 0 0 1 0 2.853l-6.844 6.844L8 14l.713-3.565 6.844-6.844a2.015 2.015 0 0 1 2.852 0Z" />
+                                        </svg>
+                                    </a>
+                                    <form action="{{ route('articleCategories.destroy', $category->id) }}" method="POST" onsubmit="return confirm('Bạn có chắc chắn muốn xóa danh mục này?');">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="flex justify-center items-center">
+                                            <svg class="w-6 h-6 text-gray-800 hover:text-red-500 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                                                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 7h14m-9 3v8m4-8v8M10 3h4a1 1 0 0 1 1 1v3H9V4a1 1 0 0 1 1-1ZM6 7h12v13a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V7Z"/>
+                                            </svg>
+                                        </button>
+                                    </form> 
+                                </div> 
                             </td>
                         </tr>
                     @endif

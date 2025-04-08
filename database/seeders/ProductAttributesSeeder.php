@@ -20,11 +20,15 @@ class ProductAttributesSeeder extends Seeder
             ['attribute_name' => 'Hạn sử dụng', 'attribute_value' => '12 tháng'],
             ['attribute_name' => 'Loại quà tặng', 'attribute_value' => 'Hộp Quà Tặng Sang Trọng'],
             ['attribute_name' => 'Chất liệu hộp', 'attribute_value' => 'Gỗ cao cấp'],
+            ['attribute_name' => 'Trọng lượng', 'attribute_value' => '500g'],
+            ['attribute_name' => 'Màu sắc hộp', 'attribute_value' => 'Vàng đồng'],
+            ['attribute_name' => 'Hương vị', 'attribute_value' => 'Đậm đà, thơm dịu'],
+            ['attribute_name' => 'Phù hợp với', 'attribute_value' => 'Biếu tặng dịp lễ, Tết']
         ];
 
-        // Gán 3 thuộc tính ngẫu nhiên cho mỗi sản phẩm
+        // Gán từ 3 đến 5 thuộc tính ngẫu nhiên cho mỗi sản phẩm
         foreach ($products as $product) {
-            $randomAttributes = collect($attributes)->random(3);
+            $randomAttributes = collect($attributes)->random(rand(3, 5));
 
             foreach ($randomAttributes as $attr) {
                 DB::table('product_attributes')->insert([

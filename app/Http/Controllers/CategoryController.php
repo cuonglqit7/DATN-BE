@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Category;
+use App\Models\Product;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 
@@ -29,6 +30,7 @@ class CategoryController extends Controller
             ->withCount('products')
             ->orderBy('position', 'ASC')
             ->paginate($numperpage);
+
         return view('categories.index', compact('categories', 'numperpage'));
     }
 
@@ -50,7 +52,11 @@ class CategoryController extends Controller
 
         $request->validate([
             'category_name' => 'required|max:50',
+        ], [
+            'category_name.required' => 'Tên danh mục không được để trống.',
+            'category_name.max' => 'Tên danh mục không được vượt quá 50 ký tự.',
         ]);
+
 
         //tăng vị trí của các position từ position chỉ định
         if (!$request->parent_id) {
@@ -106,7 +112,11 @@ class CategoryController extends Controller
     {
         $request->validate([
             'category_name' => 'required|max:50',
+        ], [
+            'category_name.required' => 'Tên danh mục không được để trống.',
+            'category_name.max' => 'Tên danh mục không được vượt quá 50 ký tự.',
         ]);
+
 
         //tăng vị trí của các position từ position chỉ định
         if (!$request->parent_id) {
@@ -135,6 +145,11 @@ class CategoryController extends Controller
      */
     public function destroy(Category $category)
     {
+        $isProduct = Product::where('category_id', $category->id)->first();
+
+        if ($isProduct) {
+            return back()->with('error', 'Danh mục không được xóa do có nhiều sản phẩm liên quan!');
+        }
         $category->delete();
         return back()->with('success', 'Danh mục đã được xóa thành công!');
     }
@@ -145,5 +160,56 @@ class CategoryController extends Controller
         $category->status = !$category->status;
         $category->save();
         return back()->with('success', 'Trạng thái danh mục đã được cập nhật!');
+    }
+
+    public function toggleOn(Request $request)
+    {
+        $ids = explode(',', $request->categories_ids);
+
+        if (empty($ids) || count($ids) === 0) {
+            return redirect()->back()->with('error', 'Vui lòng chọn ít nhất một danh mục.');
+        }
+
+        Category::whereIn('id', $ids)->update([$request->fields => true]);
+
+        return redirect()->back()->with('success', 'Đã cập nhật các danh mục đã chọn.');
+    }
+
+    public function toggleOff(Request $request)
+    {
+        // dd($request->all());
+        $ids = explode(',', $request->categories_ids);
+
+        if (empty($ids) || count($ids) === 0) {
+            return redirect()->back()->with('error', 'Vui lòng chọn ít nhất một danh mục.');
+        }
+
+        Category::whereIn('id', $ids)->update([$request->fields => false]);
+
+        return redirect()->back()->with('success', 'Đã cập nhật các danh mục đã chọn.');
+    }
+
+    public function updatePosition(Request $request, string $id)
+    {
+        $category = Category::findOrFail($id);
+        $newPosition = $request->position;
+        $oldPosition = $category->position;
+
+        if ($newPosition == $oldPosition) {
+            return back()->with('success', 'Không có thay đổi vị trí!');
+        }
+
+        if ($newPosition > $oldPosition) {
+            Category::whereBetween('position', [$oldPosition + 1, $newPosition])
+                ->decrement('position');
+        } else {
+            Category::whereBetween('position', [$newPosition, $oldPosition - 1])
+                ->increment('position');
+        }
+
+        $category->position = $newPosition;
+        $category->save();
+
+        return back()->with('success', 'Cập nhật vị trí thành công!');
     }
 }

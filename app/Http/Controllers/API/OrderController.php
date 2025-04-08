@@ -82,23 +82,24 @@ class OrderController extends Controller
             $user = auth()->user();
             if (!$user) {
                 return response()->json([
-                    'error' => 'Unauthorized. Please log in to create an order.',
+                    'error' => [
+                        'user' => 'Vui lòng đăng nhập để đặt hàng'
+                    ],
                 ], Response::HTTP_UNAUTHORIZED);
             }
 
             $validator = Validator::make($request->all(), [
-                'user_id' => 'nullable|exists:users,id',
                 'recipient_name' => 'required|string|max:50',
                 'recipient_phone' => 'required|string|max:10',
                 'shipping_address' => 'required|string|max:500',
-                'total_price' => 'required|numeric|min:0',
+                'amount' => 'required|numeric|min:0',
                 'discounts' => 'nullable|array',
                 'discounts.*.discount_id' => 'exists:discounts,id',
                 'payment_method' => 'required|in:Bank_transfer,Momo,cod',
                 'user_note' => 'nullable|string|max:200',
                 'items' => 'required|array',
-                'items.*.product_id' => 'required|exists:products,id',
-                'items.*.quantity' => 'required|integer|min:1',
+                'items.*.id' => 'required|exists:products,id',
+                'code' => 'required|size:11',
             ]);
 
             if ($validator->fails()) {
@@ -107,9 +108,9 @@ class OrderController extends Controller
 
             $errorQuantity = [];
             foreach ($request->items as $item) {
-                $product = Product::findOrFail($item['product_id']);
+                $product = Product::findOrFail($item['id']);
                 if ($product->quantity_in_stock < $item['quantity']) {
-                    $errorQuantity[$item['product_id']] = "Sản phẩm $product->product_name không đủ hàng.";
+                    $errorQuantity[$item['id']] = "Sản phẩm $product->product_name không đủ hàng.";
                 }
             }
 
@@ -119,37 +120,27 @@ class OrderController extends Controller
                 ], Response::HTTP_BAD_REQUEST);
             }
 
-            // Generate a unique 11-character order code
-            $orderCode = $this->generateUniqueOrderCode();
-
-            if ($request->payment_method == 'cod') {
-                $payment_status = 'Completed';
-            } else {
-                $payment_status = 'Pending';
-            }
-
             $order = Order::create([
                 'user_id' => $user->id,
-                'code' => $this->generateUniqueOrderCode(),
+                'code' => $request->code,
                 'recipient_name' => $request->recipient_name,
                 'recipient_phone' => $request->recipient_phone,
                 'shipping_address' => $request->shipping_address,
-                'total_price' => $request->total_price,
+                'total_price' => $request->amount,
                 'payment_method' => $request->payment_method,
-                'payment_status' => $payment_status,
+                'payment_status' => 'Pending',
                 'status' => 'Pending',
                 'user_note' => $request->user_note,
                 'admin_note' => null,
             ]);
 
             foreach ($request->items as $item) {
-                $product = Product::findOrFail($item['product_id']);
+                $product = Product::findOrFail($item['id']);
                 $unit_price = $product->promotion_price ?? $product->price;
-                $total_price = $unit_price * $item['quantity'];
 
                 if ($product->quantity_in_stock < $item['quantity']) {
                     return response()->json([
-                        'error' => "Sản phẩm $product->product_name không đủ hàng trong kho.",
+                        'errors' => "Sản phẩm $product->product_name không đủ hàng trong kho.",
                     ], Response::HTTP_BAD_REQUEST);
                 }
 
@@ -159,15 +150,11 @@ class OrderController extends Controller
 
                 OrderItem::create([
                     'order_id' => $order->id,
-                    'product_id' => $item['product_id'],
+                    'product_id' => $item['id'],
                     'quantity' => $item['quantity'],
-                    'unit_price' => $unit_price,
-                ]);
+                    'unit_price' => $unit_price
 
-                // Delete the cart item (assuming cart_id is sent in items)
-                if (isset($item['cart_id'])) {
-                    Cart::where('id', $item['cart_id'])->where('user_id', $user->id)->delete();
-                }
+                ]);
             }
 
             if (!empty($request->discounts)) {
@@ -190,16 +177,13 @@ class OrderController extends Controller
         }
     }
 
-    // Helper method to generate a unique 11-character order code
-    private function generateUniqueOrderCode(): string
+    public function checkCode(string $code)
     {
-        do {
-            // Generate a random 11-character code (e.g., "ORD-XXXXXXX")
-            $code = '#ORD' . Str::upper(Str::random(7)); // ORD- plus 7 random chars
-            // Ensure length is exactly 11; adjust if needed
-        } while (Order::where('code', $code)->exists()); // Check uniqueness
+        $isHave = Order::where('code', $code)->exists();
 
-        return $code;
+        return response()->json([
+            'isHave' => $isHave
+        ], 200);
     }
 
     /**
@@ -296,11 +280,14 @@ class OrderController extends Controller
      *     )
      * )
      */
-    public function getOrderByIp(Request $request)
+    public function getOrders(Request $request)
     {
         try {
+            $user = auth()->user();
+
             $orders = Order::with('orderItems')
-                ->where('ip_address', $request->getClientIp())
+                ->where('user_id', $user->id)
+                ->orderBy('order_date', 'DESC')
                 ->get();
 
             if (!$orders) {
